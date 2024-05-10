@@ -34,6 +34,15 @@
             backgroundColor: "#242424",
         };
 
+        var money = 10000; // Starting amount of money
+        var costs = {
+            Blue: 100,
+            Pink: 200,
+            Yellow: 150,
+            Green: 50
+        };
+
+
         var game = new Phaser.Game(config);
         var currentSelected = null; // Reference to the currently selected tile
         var cursors; // To hold the cursor keys
@@ -42,9 +51,11 @@
         function preload() {
         }
 
+        var moneyText; // To update the money display dynamically
+
         function create() {
             const tileSize = 40;
-            const types = ['green', 'yellow', 'grey', 'brown'];
+            const types = ['green', 'grey'];
 
             // Creating the top bar
             this.add.rectangle(0, 0, 800, 40, 0x333333).setOrigin(0);
@@ -55,7 +66,6 @@
                 for (let j = 0; j < 10; j++) {
                     let color = Phaser.Utils.Array.GetRandom(types);
                     let hexColor = mapColorToHex(color);
-
                     let tile = this.add.rectangle(100 + j * tileSize, 100 + i * tileSize, tileSize, tileSize, hexColor).setInteractive();
 
                     tile.on('pointerdown', function () {
@@ -77,29 +87,43 @@
             createColorButton(this, 800, 160, 0xFF1493, 'Pink'); // Pink button
             createColorButton(this, 800, 220, 0xFFFF00, 'Yellow'); // Yellow button
             createColorButton(this, 800, 280, 0x00FF00, 'Green'); // Green button
+            
+            // money related things
+            moneyText = this.add.text(10, 20, 'Money: $' + money, { fontSize: '20px', fill: '#fff' });
 
-        }
+            // Create buttons for changing tile color
+            createColorButton(this, 800, 100, 0x0000FF, 'Blue', costs.Blue);
+            createColorButton(this, 800, 160, 0xFF1493, 'Pink', costs.Pink);
+            createColorButton(this, 800, 220, 0xFFFF00, 'Yellow', costs.Yellow);
+            createColorButton(this, 800, 280, 0x00FF00, 'Green', costs.Green);
+
+        }   
 
         function mapColorToHex(color) {
             switch (color) {
                 case 'green': return 0x008000;
-                case 'yellow': return 0xFFFF00;
                 case 'grey': return 0x808080;
-                case 'brown': return 0xA52A2A;
                 default: return 0xFFFFFF;
             }
         }
 
-        function createColorButton(scene, x, y, color, label) {
+        function createColorButton(scene, x, y, color, label, cost) {
             let button = scene.add.rectangle(x, y, 80, 30, color).setInteractive();
+            let costText = ' - $' + cost;
+            scene.add.text(x + 45, y - 8, label + costText, { color: '#ffffff', fontSize: '16px' }).setOrigin(0.5);
+
             button.on('pointerdown', function () {
-                if (currentSelected) {
+                if (currentSelected && money >= cost) {
                     currentSelected.setFillStyle(color, 1);
+                    money -= cost;
+                    updateMoneyDisplay();
                 }
             });
-            scene.add.text(x - 40, y - 10, label, { color: '#ffffff', fontSize: '16px' }).setOrigin(0.5);
         }
 
+        function updateMoneyDisplay() {
+            moneyText.setText('Money: $' + money);
+        }
 
         function update() {
             if (Phaser.Input.Keyboard.JustDown(cursors.left)) {
