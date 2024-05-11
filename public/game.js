@@ -12,7 +12,22 @@ import {Plains} from './tiletypes/terrain/Plains.js';
 import {Sea} from './tiletypes/terrain/Sea.js';
 import {SolarPanel} from './tiletypes/powerProducers/renewable/SolarPanel.js';
 import {EleringDataFetcher} from './EleringDataFetcher.js';
-import {PowerConsumer} from "./tiletypes/powerConsumer/PowerConsumer";
+import {PowerConsumer} from "./tiletypes/powerConsumer/PowerConsumer.js";
+import {Connector} from "./tiletypes/powerConnector/Connector.js";
+import {HouseBattery} from "./tiletypes/powerConsumer/HouseBattery.js";
+import {HouseSolar} from "./tiletypes/powerConsumer/HouseSolar.js";
+import {HouseSolarBattery} from "./tiletypes/powerConsumer/HouseSolarBattery.js";
+import {Coal} from "./tiletypes/powerProducers/fossil/Coal.js";
+import {Gas} from "./tiletypes/powerProducers/fossil/Gas.js";
+import {Geothermal} from "./tiletypes/powerProducers/renewable/Geothermal.js";
+import {Hydro} from "./tiletypes/powerProducers/renewable/Hydro.js";
+import {Biomass} from "./tiletypes/powerProducers/renewable/Biomass.js";
+import {Nuclear} from "./tiletypes/powerProducers/fossil/Nuclear.js";
+import {Tidal} from "./tiletypes/powerProducers/renewable/Tidal.js";
+import {Windmill} from "./tiletypes/powerProducers/renewable/Windmill.js";
+import {ChemicalBattery} from "./tiletypes/powerStorage/ChemicalBattery.js";
+import {Mountain} from "./tiletypes/terrain/Mountain.js";
+import {Forest} from "./tiletypes/terrain/Forest.js";
 
 /**
  * Configuration object for the Phaser game.
@@ -102,7 +117,7 @@ function preload() {
  * The create function is part of the Phaser game lifecycle and is used to set up the game scene.
  */
 function create() {
-    const types = ['Plains', 'House', 'Sea', 'SolarPanel'];
+    const types = ["Connector", "House", "HouseBattery", "HouseSolar", "HouseSolarBattery", "Coal", "Gas", "Nuclear", "Biomass", "Geothermal", "Hydro", "SolarPanel", "Tidal", "Windmill", "ChemicalBattery", "GravityBattery", "Forest", "Mountain", "Plains", "Sea"];
     initializeDataFetcher().then(() => {
         console.log("Prod: " + HOURLY_PRODUCTION);
         console.log("Cons: " + HOURLY_CONSUMPTION);
@@ -117,17 +132,65 @@ function create() {
             let type = Phaser.Utils.Array.GetRandom(types);
             let tile;
             switch (type) {
-                case 'Plains':
-                    tile = new Plains(this, i, j);
+                case 'Connector':
+                    tile = new Connector(this, i, j);
                     break;
                 case 'House':
                     tile = new House(this, i, j);
                     break;
-                case 'Sea':
-                    tile = new Sea(this, i, j);
+                case 'HouseBattery':
+                    tile = new HouseBattery(this, i, j);
+                    break;
+                case 'HouseSolar':
+                    tile = new HouseSolar(this, i, j);
+                    break;
+                case 'HouseSolarBattery':
+                    tile = new HouseSolarBattery(this, i, j);
+                    break;
+                case 'Coal':
+                    tile = new Coal(this, i, j);
+                    break;
+                case 'Gas':
+                    tile = new Gas(this, i, j);
+                    break;
+                case 'Nuclear':
+                    tile = new Nuclear(this, i, j);
+                    break;
+                case 'Biomass':
+                    tile = new Biomass(this, i, j);
+                    break;
+                case 'Geothermal':
+                    tile = new Geothermal(this, i, j);
+                    break;
+                case 'Hydro':
+                    tile = new Hydro(this, i, j);
                     break;
                 case 'SolarPanel':
                     tile = new SolarPanel(this, i, j);
+                    break;
+                case 'Tidal':
+                    tile = new Tidal(this, i, j);
+                    break;
+                case 'Windmill':
+                    tile = new Windmill(this, i, j);
+                    break;
+                case 'ChemicalBattery':
+                    tile = new ChemicalBattery(this, i, j);
+                    break;
+                case 'GravityBattery':
+                    tile = new ChemicalBattery(this, i, j);
+                    break;
+                case 'Forest':
+                    tile = new Forest(this, i, j);
+                    break;
+                case 'Mountain':
+                    tile = new Mountain(this, i, j);
+                    break;
+                case 'Plains':
+                    tile = new Plains(this, i, j);
+                    break;
+                case 'Sea':
+                    tile = new Sea(this, i, j);
                     break;
                 default:
                     tile = new Tile(this, i, j, "red");

@@ -1,6 +1,6 @@
-import {Tile} from "../../Tile";
+import {Tile} from "../../Tile.js";
 
-class Connector extends Tile {
+export class Connector extends Tile {
     constructor(scene, i, j, tileSize, tiles) {
         super(scene, i, j, 'brown'); // 'brown' is an example color for the power pole
         this.tiles = tiles;
