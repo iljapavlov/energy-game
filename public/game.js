@@ -57,7 +57,7 @@ var paused = true;
 let transactionHistory;
 
 const HOURLY_CONSUMPTION = [10, 15, 20, 50, 5, 10, 3, 4, 2, 5, 16, 70, 60, 40, 20, 17, 14, 15, 17, 2, 24, 25, 40];
-const HOURLY_PRODUCTION = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130];
+const HOURLY_PRODUCTION = [10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130];
 var hourCounter = 0;
 
 const getNumberOfTileColor = (tileColor) => {
@@ -65,20 +65,32 @@ const getNumberOfTileColor = (tileColor) => {
 }
 
 const getCurrentConsumption = () => {
-    return HOURLY_CONSUMPTION[hourCounter % HOURLY_CONSUMPTION.length] * getNumberOfTileColor('grey');
+    
+    return HOURLY_CONSUMPTION[hourCounter % HOURLY_CONSUMPTION.length] * House.houseCount;
 }
 const getCurrentProduction = () => {
     return HOURLY_PRODUCTION[hourCounter % HOURLY_PRODUCTION.length] * getNumberOfTileColor('aqua');
 }
 const getCurrentElectricityPrice = (production, consumption) => {
-    basePrice = 0.1;
-    price_multiplier = 1 + (consumption - production) / production
-    return price_multiplier * basePrice;
+    const BASE_ELECTRICITTY_PRICE = 0.1; // TODO change this 
+
+    let price_multiplier;
+    if (consumption > production) {
+        price_multiplier = 1 + (consumption - production) / (production + 1e-4);
+    } else {
+        price_multiplier = 1 - (production - consumption) / (production + 1e-4);
+    }
+
+    const finalPrice = Math.max(price_multiplier * BASE_ELECTRICITTY_PRICE, BASE_ELECTRICITTY_PRICE);
+    return finalPrice.toFixed(3);
 }
 
 let currentConsumption = getCurrentConsumption();
 let currentProduction = getCurrentProduction();
-let currentElectricityPrice = getCurrentElectricityPrice();
+console.log(currentConsumption, currentProduction, 'c p')
+let currentElectricityPrice = getCurrentElectricityPrice(currentConsumption, currentProduction);
+
+console.log('current elect price calc', currentConsumption, currentProduction, currentElectricityPrice);
 
 /**
  * The preload function is part of the Phaser game lifecycle and is used to load assets.
@@ -90,8 +102,9 @@ function preload() {
 
 var moneyText; // To update the money display dynamically
 var timeText; // To update the time display dynamically
-var consumptionText;
-var productionText;
+// var consumptionText;
+// var productionText;
+var electricityText;
 
 /**
  * The create function is part of the Phaser game lifecycle and is used to set up the game scene.
@@ -136,7 +149,7 @@ function create() {
     cursors = this.input.keyboard.createCursorKeys();
 
     // money related things
-    moneyText = this.add.text(10, 20, 'Money: $' + money, { fontSize: '20px', fill: '#fff' });
+    moneyText = this.add.text(10, 20, 'Money: €' + money, { fontSize: '20px', fill: '#fff' });
     // Initialize the transaction history
     transactionHistory = new TransactionHistory();
     transactionHistory.addTransaction(money, 'income', 'Initial money')
@@ -153,10 +166,11 @@ function create() {
     // Add keyboard inputs for pausing and resuming the game
     this.input.keyboard.on('keydown-P', pauseGame, this);
     this.input.keyboard.on('keydown-R', resumeGame, this);
-    timeText = this.add.text(300, 20, 'Hour: ' + hourCounter, { fontSize: '20px', fill: '#fff' });
+    timeText = this.add.text(300, 20, 'Hour: ' + hourCounter, { fontSize: '18px', fill: '#fff' });
 
-    consumptionText = this.add.text(500, 20, 'Consumption: ' + currentConsumption, { fontSize: '20px', fill: '#fff' });
-    productionText = this.add.text(700, 20, 'Production: ' + currentProduction, { fontSize: '20px', fill: '#fff' });
+    // consumptionText = this.add.text(500, 20, 'Consumption: ' + currentConsumption, { fontSize: '18px', fill: '#fff' });
+    // productionText = this.add.text(700, 20, 'Production: ' + currentProduction, { fontSize: '18px', fill: '#fff' });
+    electricityText =  this.add.text(500, 20, 'Electricity price: ' + currentElectricityPrice, { fontSize: '18px', fill: '#fff' });
 }
 
 /**
@@ -168,10 +182,14 @@ function onTick() {
     if (!paused) {
         hourCounter++;
         currentConsumption = getCurrentConsumption();
-        consumptionText.setText('Consumption: ' + currentConsumption);
+        // consumptionText.setText('Consumption: ' + currentConsumption);
 
         currentProduction = getCurrentProduction();
-        productionText.setText('Production: ' + currentProduction);
+        // productionText.setText('Production: ' + currentProduction);
+
+        console.log('curr cons prod', currentConsumption, currentProduction);
+        currentElectricityPrice = getCurrentElectricityPrice(currentProduction, currentConsumption);
+        electricityText.setText('Electricity price: ' + currentElectricityPrice + ' € / kWh');
 
         transactionHistory.addTransaction(currentConsumption, 'expense', 'Hourly expense');
         updateMoneyDisplay();
