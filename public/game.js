@@ -77,6 +77,8 @@ let currentProduction = getCurrentProduction();
  * The preload function is part of the Phaser game lifecycle and is used to load assets.
  */
 function preload() {
+    // Load hosue image
+    this.load.image('house', './img/house.png');
 }
 
 var moneyText; // To update the money display dynamically
