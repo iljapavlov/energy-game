@@ -5,29 +5,30 @@
  */
 
 // Import necessary modules and classes
-import {Tile} from './Tile.js';
-import {TransactionHistory} from './TransactionHistory.js';
-import {House} from './tiletypes/powerConsumer/House.js';
-import {Plains} from './tiletypes/terrain/Plains.js';
-import {Sea} from './tiletypes/terrain/Sea.js';
-import {SolarPanel} from './tiletypes/powerProducers/renewable/SolarPanel.js';
-import {EleringDataFetcher} from './EleringDataFetcher.js';
-import {PowerConsumer} from "./tiletypes/powerConsumer/PowerConsumer.js";
-import {Connector} from "./tiletypes/powerConnector/Connector.js";
-import {HouseBattery} from "./tiletypes/powerConsumer/HouseBattery.js";
-import {HouseSolar} from "./tiletypes/powerConsumer/HouseSolar.js";
-import {HouseSolarBattery} from "./tiletypes/powerConsumer/HouseSolarBattery.js";
-import {Coal} from "./tiletypes/powerProducers/fossil/Coal.js";
-import {Gas} from "./tiletypes/powerProducers/fossil/Gas.js";
-import {Geothermal} from "./tiletypes/powerProducers/renewable/Geothermal.js";
-import {Hydro} from "./tiletypes/powerProducers/renewable/Hydro.js";
-import {Biomass} from "./tiletypes/powerProducers/renewable/Biomass.js";
-import {Nuclear} from "./tiletypes/powerProducers/fossil/Nuclear.js";
-import {Tidal} from "./tiletypes/powerProducers/renewable/Tidal.js";
-import {Windmill} from "./tiletypes/powerProducers/renewable/Windmill.js";
-import {ChemicalBattery} from "./tiletypes/powerStorage/ChemicalBattery.js";
-import {Forest} from "./tiletypes/terrain/Forest.js";
-import {levelDesigns} from "./levelDesigns.js";
+import { EleringDataFetcher } from './EleringDataFetcher.js';
+import { Tile } from './Tile.js';
+import { TransactionHistory } from './TransactionHistory.js';
+import { levelDesigns } from "./levelDesigns.js";
+import { Connector } from "./tiletypes/powerConnector/Connector.js";
+import { House } from './tiletypes/powerConsumer/House.js';
+import { HouseBattery } from "./tiletypes/powerConsumer/HouseBattery.js";
+import { HouseSolar } from "./tiletypes/powerConsumer/HouseSolar.js";
+import { HouseSolarBattery } from "./tiletypes/powerConsumer/HouseSolarBattery.js";
+import { PowerConsumer } from "./tiletypes/powerConsumer/PowerConsumer.js";
+import { Coal } from "./tiletypes/powerProducers/fossil/Coal.js";
+import { Gas } from "./tiletypes/powerProducers/fossil/Gas.js";
+import { Nuclear } from "./tiletypes/powerProducers/fossil/Nuclear.js";
+import { Biomass } from "./tiletypes/powerProducers/renewable/Biomass.js";
+import { Geothermal } from "./tiletypes/powerProducers/renewable/Geothermal.js";
+import { Hydro } from "./tiletypes/powerProducers/renewable/Hydro.js";
+import { SolarPanel } from './tiletypes/powerProducers/renewable/SolarPanel.js';
+import { Tidal } from "./tiletypes/powerProducers/renewable/Tidal.js";
+import { Windmill } from "./tiletypes/powerProducers/renewable/Windmill.js";
+import { ChemicalBattery } from "./tiletypes/powerStorage/ChemicalBattery.js";
+import { Forest } from "./tiletypes/terrain/Forest.js";
+import { Plains } from './tiletypes/terrain/Plains.js';
+import { Sea } from './tiletypes/terrain/Sea.js';
+import { WeatherManager } from './weather/WeatherManager.js';
 
 /**
  * Configuration object for the Phaser game.
@@ -68,6 +69,7 @@ let HOURLY_CONSUMPTION = [];
 let HOURLY_PRODUCTION = [];
 
 var hourCounter = 0;
+let weatherManager = null;
 
 var moneyText; // To update the money display dynamically
 var timeText; // To update the time display dynamically
@@ -116,6 +118,12 @@ function preload() {
     this.load.image('solar-panel', './img/solar-panel.png');
     this.load.image('tower', './img/tower.png');
     this.load.image('water', './img/water.png');
+
+    // Weather images
+    this.load.image('sun', './img/weather/sun.png');
+    this.load.image('moon', './img/weather/moon.png');
+    this.load.image('cloudySun', './img/weather/cloudySun.png');
+    this.load.image('storm', './img/weather/storm.png');
 }
 
 /**
@@ -246,6 +254,9 @@ function create() {
     electricityText = this.add.text(500, 20, 'Electricity price: ' + currentElectricityPrice, {
         fontSize: '18px', fill: '#fff'
     });
+
+    // ALL THE WEATHER MANAGER STUFF
+    weatherManager = new WeatherManager(this);
 }
 
 /**
@@ -269,6 +280,13 @@ function onTick() {
         transactionHistory.addTransaction(currentConsumption, 'expense', 'Hourly expense');
         updateMoneyDisplay();
         updateTimeDisplay();
+
+        // Set random weather
+        if (hourCounter % 6 === 0) {
+            if (!!weatherManager) {
+                weatherManager.setRandomWeather();
+            }
+        }
     }
 }
 
