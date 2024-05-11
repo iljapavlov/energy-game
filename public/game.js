@@ -1,3 +1,8 @@
+import {Tile} from './Tile.js';
+import { Sea } from './tiletypes/Sea.js';
+import { Plains } from './tiletypes/Plains.js';
+import { City } from './tiletypes/City.js';
+
 var config = {
     type: Phaser.AUTO,
     width: 900,
@@ -21,7 +26,6 @@ var costs = {
 
 
 var game = new Phaser.Game(config);
-var currentSelected = null; // Reference to the currently selected tile
 var cursors; // To hold the cursor keys
 var tiles = []; // 2D array of tiles
 
@@ -32,7 +36,7 @@ var moneyText; // To update the money display dynamically
 
 function create() {
     const tileSize = 40;
-    const types = ['green', 'grey'];
+    const types = ['Plains', 'City', 'Sea'];
 
     // Creating the top bar
     this.add.rectangle(0, 0, 800, 40, 0x333333).setOrigin(0);
@@ -41,20 +45,28 @@ function create() {
     for (let i = 0; i < 10; i++) {
         tiles[i] = [];
         for (let j = 0; j < 10; j++) {
-            let color = Phaser.Utils.Array.GetRandom(types);
-            let hexColor = mapColorToHex(color);
-            let tile = this.add.rectangle(100 + j * tileSize, 100 + i * tileSize, tileSize, tileSize, hexColor).setInteractive();
-
-            tile.on('pointerdown', function () {
-                selectTile(i, j);
-            });
-
+            let type = Phaser.Utils.Array.GetRandom(types);
+            let tile;
+            switch (type) {
+                case 'Plains':
+                    tile = new Plains(this, i, j, tileSize);
+                    break;
+                case 'City':
+                    tile = new City(this, i, j, tileSize);
+                    break;
+                case 'Sea':
+                    tile = new Sea(this, i, j, tileSize);
+                    break;
+                default:
+                    tile = new Tile(this, i, j, type, tileSize);
+                    break;
+            }
             tiles[i][j] = tile;
         }
     }
 
     // Initial selection
-    selectTile(0, 0);
+    tiles[0][0].select();
 
     // Capture keyboard arrows
     cursors = this.input.keyboard.createCursorKeys();
@@ -76,13 +88,7 @@ function create() {
 
 }
 
-function mapColorToHex(color) {
-    switch (color) {
-        case 'green': return 0x008000;
-        case 'grey': return 0x808080;
-        default: return 0xFFFFFF;
-    }
-}
+
 
 function createColorButton(scene, x, y, color, label, cost) {
     let button = scene.add.rectangle(x, y, 80, 30, color).setInteractive();
@@ -90,8 +96,8 @@ function createColorButton(scene, x, y, color, label, cost) {
     scene.add.text(x + 45, y - 8, label + costText, { color: '#ffffff', fontSize: '16px' }).setOrigin(0.5);
 
     button.on('pointerdown', function () {
-        if (currentSelected && money >= cost) {
-            currentSelected.setFillStyle(color, 1);
+        if (Tile.selectedTile && money >= cost) {
+            Tile.selectedTile.tile.setFillStyle(color, 1);
             money -= cost;
             updateMoneyDisplay();
         }
@@ -115,26 +121,15 @@ function update() {
 }
 
 function updateSelection(x, y) {
-    if (currentSelected) {
-        let i = currentSelected.i;
-        let j = currentSelected.j;
+    if (Tile.selectedTile) {
+        let i = Tile.selectedTile.i;
+        let j = Tile.selectedTile.j;
         let newI = i + y;
         let newJ = j + x;
 
         if (newI >= 0 && newI < 10 && newJ >= 0 && newJ < 10) {
-            selectTile(newI, newJ);
+            tiles[newI][newJ].select();
         }
     }
 }
 
-function selectTile(i, j) {
-    if (currentSelected) {
-        // Remove border from previously selected tile
-        currentSelected.setStrokeStyle(0);
-    }
-    let tile = tiles[i][j];
-    tile.setStrokeStyle(2, 0x00FF00); // Green border for selected tile
-    currentSelected = tile;
-    currentSelected.i = i;
-    currentSelected.j = j;
-}
