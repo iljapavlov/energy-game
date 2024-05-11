@@ -1,10 +1,11 @@
 import {Tile} from "../../Tile.js";
+import { TILE_CONFIG } from "../../TileConfig.js";
 
 export class PowerProducer extends Tile {
-    constructor(scene, i, j, tileSize, powerOutput, isRenewable) {
-        super(scene, i, j, 'yellow');
-        this.powerOutput = powerOutput;
-        this.isRenewable = isRenewable;
+    constructor(scene, i, j, tileName) {
+        super(scene, i, j, tileName);
+        this.powerOutput = TILE_CONFIG[tileName]['powerOutput'];
+        this.isRenewable = TILE_CONFIG[tileName]['isRenewable'];
     }
 
     getPowerOutput() {
