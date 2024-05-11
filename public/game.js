@@ -93,14 +93,14 @@ const getCurrentElectricityPrice = (production, consumption) => {
     } else {
         price_multiplier = 1 - (production - consumption) / (production + 1e-4);
     }
-
+    console.log(price_multiplier, 'multipl', price_multiplier*BASE_ELECTRICITTY_PRICE, 'price')
+    console.log(production, consumption)
     const finalPrice = Math.max(price_multiplier * BASE_ELECTRICITTY_PRICE, BASE_ELECTRICITTY_PRICE);
     return finalPrice.toFixed(3);
 }
 
 let currentConsumption = getCurrentConsumption();
 let currentProduction = getCurrentProduction();
-console.log(currentConsumption, currentProduction, 'c p')
 let currentElectricityPrice = getCurrentElectricityPrice(currentConsumption, currentProduction);
 
 console.log('current elect price calc', currentConsumption, currentProduction, currentElectricityPrice);
@@ -111,6 +111,11 @@ console.log('current elect price calc', currentConsumption, currentProduction, c
 function preload() {
     // Load hosue image
     this.load.image('house', './img/house.png');
+    this.load.image('house-night', './img/house-night.png');
+    this.load.image('house-solar', './img/house-solar.png');
+    this.load.image('solar-panel', './img/solar-panel.png');
+    this.load.image('tower', './img/tower.png');
+    this.load.image('water', './img/water.png');
 }
 
 /**

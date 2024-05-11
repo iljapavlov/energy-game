@@ -1,3 +1,4 @@
+import { TILE_CONFIG } from "../TileConfig.js";
 /**
  * @file Tile.js
  * This file contains the Tile class which represents a tile in a tile-based game.
@@ -22,50 +23,51 @@ export class Tile {
      * @param {Phaser.Scene} scene - The current game scene.
      * @param {number} i - The row index of the tile.
      * @param {number} j - The column index of the tile.
-     * @param {string} colorOrImg - The color of the tile.
+     * @param {string} tileName - Tile name
      */
-    constructor(scene, i, j, colorOrImg) {
+    constructor(scene, i, j, tileName) {
         this.i = i;
         this.j = j;
-        this.color = colorOrImg;
+        this.name = tileName;
+        console.log(TILE_CONFIG[tileName], tileName)
 
-        const hexColor = Tile.mapColorToHex(colorOrImg);
-        if (!!hexColor) {
-            this.tile = scene.add.rectangle(100 + j * Tile.TILE_SIZE, 100 + i * Tile.TILE_SIZE, Tile.TILE_SIZE, Tile.TILE_SIZE, hexColor).setInteractive();
-        } else {
-            this.tile = scene.add.image(100 + j * Tile.TILE_SIZE, 100 + i * Tile.TILE_SIZE, "house").setInteractive();
-            this.tile.setScale(0.1);
+        const bgColor = TILE_CONFIG[tileName].bgColor;
+        const image = TILE_CONFIG[tileName].image;
+        // draw tile bg
+        this.bg = scene.add.rectangle(
+            100 + j * Tile.TILE_SIZE,
+            100 + i * Tile.TILE_SIZE,
+            Tile.TILE_SIZE,
+            Tile.TILE_SIZE,
+            bgColor
+        ).setInteractive().setStrokeStyle(0);
+
+        if (!!image) {
+            this.tile = scene.add.image(
+                100 + j * Tile.TILE_SIZE,
+                100 + i * Tile.TILE_SIZE,
+                image
+            ).setInteractive()
+            const rescale =  TILE_CONFIG[tileName].rescale || 0.2;
+            this.tile.setScale(rescale).setDepth(1);
         }
 
-        this.tile.on('pointerdown', () => this.select());
+        // Common pointerdown event for both rectangle and image cases
+        this.bg.on('pointerdown', () => this.select());
     }
 
     /**
      * Selects this tile.
-     * If there is a previously selected tile, it removes the border from it.
-     * Then, it adds a green border to this tile and sets it as the selected tile.
+     * If there is a previously selected tile, it removes the bg from it.
+     * Then, it adds a green bg to this tile and sets it as the selected tile.
      */
     select() {
         if (Tile.selectedTile) {
-            // Remove border from previously selected tile
-            Tile.selectedTile.tile.setStrokeStyle(0);
+            // Remove bg from previously selected tile
+            Tile.selectedTile.bg.setStrokeStyle(0);
         }
-        this.tile.setStrokeStyle(2, 0x00FF00); // Green border for selected tile
+        // Set green bg on the rectangle
+        this.bg.setStrokeStyle(2, 0x00FF00); // Green bg for selected tile
         Tile.selectedTile = this;
-    }
-
-    /**
-     * Maps a color name to a hex color code.
-     * @param {string} color - The color name.
-     * @returns {number} The hex color code.
-     */
-    static mapColorToHex(color) {
-        switch (color) {
-            case 'green': return 0x008000;
-            case 'grey': return 0x808080;
-            case 'blue': return 0x0000FF;
-            case 'aqua': return 0x00FFFF;
-            default: return undefined;
-        }
     }
 }
