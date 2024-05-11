@@ -28,11 +28,15 @@ var costs = {
 var game = new Phaser.Game(config);
 var cursors; // To hold the cursor keys
 var tiles = []; // 2D array of tiles
+var gameTimer;
+var paused = true;
+var dayCounter = 0;
 
 function preload() {
 }
 
 var moneyText; // To update the money display dynamically
+var timeText; // To update the time display dynamically
 
 function create() {
     const tileSize = 40;
@@ -80,6 +84,36 @@ function create() {
     createColorButton(this, 800, 220, 0xFFFF00, 'Yellow', costs.Yellow);
     createColorButton(this, 800, 280, 0x00FF00, 'Green', costs.Green);
 
+    // Create a looped timer event that triggers every second
+    gameTimer = this.time.addEvent({ delay: 1000, callback: onTick, callbackScope: this, loop: true });
+    // Add keyboard inputs for pausing and resuming the game
+    this.input.keyboard.on('keydown-P', pauseGame, this);
+    this.input.keyboard.on('keydown-R', resumeGame, this);
+    timeText = this.add.text(300, 20, 'Day: ' + dayCounter, { fontSize: '20px', fill: '#fff' });
+
+
+
+}
+
+function onTick() {
+    // Logic that should happen every tick
+    // For example, decrease money every tick:
+    if (!paused) {
+        money -= 10;
+        updateMoneyDisplay();
+        dayCounter++;
+        updateTimeDisplay();
+    }
+}
+
+function pauseGame() {
+    paused = true;
+    gameTimer.paused = true;
+}
+
+function resumeGame() {
+    paused = false;
+    gameTimer.paused = false;
 }
 
 function createColorButton(scene, x, y, color, label, cost) {
@@ -98,6 +132,10 @@ function createColorButton(scene, x, y, color, label, cost) {
 
 function updateMoneyDisplay() {
     moneyText.setText('Money: $' + money);
+}
+
+function updateTimeDisplay() {
+    timeText.setText('Day: ' + dayCounter);
 }
 
 function update() {
