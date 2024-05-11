@@ -14,6 +14,7 @@ export class Tile {
      * There can only be one selected tile at a time.
      */
     static selectedTile = null;
+    static TILE_SIZE = 50;
 
     /**
      * Constructor for the Tile class.
@@ -22,15 +23,13 @@ export class Tile {
      * @param {number} i - The row index of the tile.
      * @param {number} j - The column index of the tile.
      * @param {string} color - The color of the tile.
-     * @param {number} tileSize - The size of the tile.
      */
-    constructor(scene, i, j, color, tileSize) {
+    constructor(scene, i, j, color) {
         this.i = i;
         this.j = j;
         this.color = color;
-        this.tileSize = tileSize;
         this.hexColor = this.mapColorToHex(color);
-        this.tile = scene.add.rectangle(100 + j * tileSize, 100 + i * tileSize, tileSize, tileSize, this.hexColor).setInteractive();
+        this.tile = scene.add.rectangle(100 + j * Tile.TILE_SIZE, 100 + i * Tile.TILE_SIZE, Tile.TILE_SIZE, Tile.TILE_SIZE, this.hexColor).setInteractive();
         this.tile.on('pointerdown', () => this.select());
     }
 
@@ -58,6 +57,7 @@ export class Tile {
             case 'green': return 0x008000;
             case 'grey': return 0x808080;
             case 'blue': return 0x0000FF;
+            case 'aqua': return 0x00FFFF;
             default: return 0xFFFFFF;
         }
     }

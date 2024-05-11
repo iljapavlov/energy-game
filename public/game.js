@@ -5,11 +5,12 @@
  */
 
 // Import necessary modules and classes
-import {Tile} from './Tile.js';
-import { Sea } from './tiletypes/Sea.js';
+import { Tile } from './Tile.js';
+import { TransactionHistory } from './TransactionHistory.js';
+import { House } from './tiletypes/House.js';
 import { Plains } from './tiletypes/Plains.js';
-import { City } from './tiletypes/City.js';
-import {TransactionHistory} from './TransactionHistory.js';
+import { Sea } from './tiletypes/Sea.js';
+import { SolarPanel } from './tiletypes/SolarPanel.js';
 
 /**
  * Configuration object for the Phaser game.
@@ -53,8 +54,24 @@ var cursors; // To hold the cursor keys
 var tiles = []; // 2D array of tiles
 var gameTimer;
 var paused = true;
-var dayCounter = 0;
 let transactionHistory;
+
+const HOURLY_CONSUMPTION = [10, 15, 20, 50, 5, 10, 3, 4, 2, 5, 16, 70, 60, 40, 20, 17, 14, 15, 17, 2, 24, 25, 40];
+const HOURLY_PRODUCTION = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130];
+var hourCounter = 0;
+
+const getNumberOfTileColor = (tileColor) => {
+    return tiles.flat().filter(tile => tile.color === tileColor).length;
+}
+
+const getCurrentConsumption = () => {
+    return HOURLY_CONSUMPTION[hourCounter % HOURLY_CONSUMPTION.length] * getNumberOfTileColor('grey');
+}
+const getCurrentProduction = () => {
+    return HOURLY_PRODUCTION[hourCounter % HOURLY_PRODUCTION.length] * getNumberOfTileColor('aqua');
+}
+let currentConsumption = getCurrentConsumption();
+let currentProduction = getCurrentProduction();
 
 /**
  * The preload function is part of the Phaser game lifecycle and is used to load assets.
@@ -64,13 +81,14 @@ function preload() {
 
 var moneyText; // To update the money display dynamically
 var timeText; // To update the time display dynamically
+var consumptionText;
+var productionText;
 
 /**
  * The create function is part of the Phaser game lifecycle and is used to set up the game scene.
  */
 function create() {
-    const tileSize = 40;
-    const types = ['Plains', 'City', 'Sea'];
+    const types = ['Plains', 'House', 'Sea', 'SolarPanel'];
 
     // Creating the top bar
     this.add.rectangle(0, 0, 800, 40, 0x333333).setOrigin(0);
@@ -83,16 +101,19 @@ function create() {
             let tile;
             switch (type) {
                 case 'Plains':
-                    tile = new Plains(this, i, j, tileSize);
+                    tile = new Plains(this, i, j);
                     break;
-                case 'City':
-                    tile = new City(this, i, j, tileSize);
+                case 'House':
+                    tile = new House(this, i, j);
                     break;
                 case 'Sea':
-                    tile = new Sea(this, i, j, tileSize);
+                    tile = new Sea(this, i, j);
+                    break;
+                case 'SolarPanel':
+                    tile = new SolarPanel(this, i, j);
                     break;
                 default:
-                    tile = new Tile(this, i, j, type, tileSize);
+                    tile = new Tile(this, i, j, "red");
                     break;
             }
             tiles[i][j] = tile;
@@ -123,10 +144,10 @@ function create() {
     // Add keyboard inputs for pausing and resuming the game
     this.input.keyboard.on('keydown-P', pauseGame, this);
     this.input.keyboard.on('keydown-R', resumeGame, this);
-    timeText = this.add.text(300, 20, 'Day: ' + dayCounter, { fontSize: '20px', fill: '#fff' });
+    timeText = this.add.text(300, 20, 'Hour: ' + hourCounter, { fontSize: '20px', fill: '#fff' });
 
-
-
+    consumptionText = this.add.text(500, 20, 'Consumption: ' + currentConsumption, { fontSize: '20px', fill: '#fff' });
+    productionText = this.add.text(700, 20, 'Production: ' + currentProduction, { fontSize: '20px', fill: '#fff' });
 }
 
 /**
@@ -136,9 +157,15 @@ function onTick() {
     // Logic that should happen every tick
     // For example, decrease money every tick:
     if (!paused) {
-        transactionHistory.addTransaction(10, 'expense', 'Daily expense');
+        hourCounter++;
+        currentConsumption = getCurrentConsumption();
+        consumptionText.setText('Consumption: ' + currentConsumption);
+
+        currentProduction = getCurrentProduction();
+        productionText.setText('Production: ' + currentProduction);
+
+        transactionHistory.addTransaction(currentConsumption, 'expense', 'Hourly expense');
         updateMoneyDisplay();
-        dayCounter++;
         updateTimeDisplay();
     }
 }
@@ -193,7 +220,7 @@ function updateMoneyDisplay() {
  * The updateTimeDisplay function is used to update the display of the current day.
  */
 function updateTimeDisplay() {
-    timeText.setText('Day: ' + dayCounter);
+    timeText.setText('Hour: ' + hourCounter);
 }
 
 /**
