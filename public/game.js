@@ -26,8 +26,8 @@ import {Nuclear} from "./tiletypes/powerProducers/fossil/Nuclear.js";
 import {Tidal} from "./tiletypes/powerProducers/renewable/Tidal.js";
 import {Windmill} from "./tiletypes/powerProducers/renewable/Windmill.js";
 import {ChemicalBattery} from "./tiletypes/powerStorage/ChemicalBattery.js";
-import {Mountain} from "./tiletypes/terrain/Mountain.js";
 import {Forest} from "./tiletypes/terrain/Forest.js";
+import {levelDesigns} from "./levelDesigns.js";
 
 /**
  * Configuration object for the Phaser game.
@@ -123,6 +123,7 @@ function preload() {
  */
 function create() {
     const types = ["Connector", "House", "HouseBattery", "HouseSolar", "HouseSolarBattery", "Coal", "Gas", "Nuclear", "Biomass", "Geothermal", "Hydro", "SolarPanel", "Tidal", "Windmill", "ChemicalBattery", "GravityBattery", "Forest", "Mountain", "Plains", "Sea"];
+    var levelDesign = levelDesigns.level1
     initializeDataFetcher().then(() => {
         console.log("Prod: " + HOURLY_PRODUCTION);
         console.log("Cons: " + HOURLY_CONSUMPTION);
@@ -134,7 +135,7 @@ function create() {
     for (let i = 0; i < 10; i++) {
         tiles[i] = [];
         for (let j = 0; j < 10; j++) {
-            let type = Phaser.Utils.Array.GetRandom(types);
+            let type = levelDesign[i][j];
             let tile;
             switch (type) {
                 case 'Connector':
@@ -204,6 +205,15 @@ function create() {
             tiles[i][j] = tile;
         }
     }
+
+    // Update Connector Tile appearances
+    // for (let i = 0; i < tiles.length; i++) {
+    //     for (let j = 0; j < tiles[i].length; j++) {
+    //         if (tiles[i][j] instanceof Connector) {
+    //             tiles[i][j].updateAppearance();
+    //         }
+    //     }
+    // }
 
     // Initial selection
     tiles[0][0].select();
