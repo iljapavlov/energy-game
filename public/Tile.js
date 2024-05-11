@@ -22,14 +22,20 @@ export class Tile {
      * @param {Phaser.Scene} scene - The current game scene.
      * @param {number} i - The row index of the tile.
      * @param {number} j - The column index of the tile.
-     * @param {string} color - The color of the tile.
+     * @param {string} colorOrImg - The color of the tile.
      */
-    constructor(scene, i, j, color) {
+    constructor(scene, i, j, colorOrImg) {
         this.i = i;
         this.j = j;
-        this.color = color;
-        this.hexColor = this.mapColorToHex(color);
-        this.tile = scene.add.rectangle(100 + j * Tile.TILE_SIZE, 100 + i * Tile.TILE_SIZE, Tile.TILE_SIZE, Tile.TILE_SIZE, this.hexColor).setInteractive();
+
+        const hexColor = Tile.mapColorToHex(colorOrImg);
+        if (!!hexColor) {
+            this.tile = scene.add.rectangle(100 + j * Tile.TILE_SIZE, 100 + i * Tile.TILE_SIZE, Tile.TILE_SIZE, Tile.TILE_SIZE, hexColor).setInteractive();
+        } else {
+            this.tile = scene.add.image(100 + j * Tile.TILE_SIZE, 100 + i * Tile.TILE_SIZE, "house").setInteractive();
+            this.tile.setScale(0.1);
+        }
+
         this.tile.on('pointerdown', () => this.select());
     }
 
@@ -52,13 +58,13 @@ export class Tile {
      * @param {string} color - The color name.
      * @returns {number} The hex color code.
      */
-    mapColorToHex(color) {
+    static mapColorToHex(color) {
         switch (color) {
             case 'green': return 0x008000;
             case 'grey': return 0x808080;
             case 'blue': return 0x0000FF;
             case 'aqua': return 0x00FFFF;
-            default: return 0xFFFFFF;
+            default: return undefined;
         }
     }
 }
