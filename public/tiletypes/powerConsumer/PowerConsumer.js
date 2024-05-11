@@ -1,8 +1,8 @@
 import {Tile} from "../../Tile.js";
 import {House} from "./House.js";
-import {HouseBattery} from "./HouseBattery";
-import {HouseSolar} from "./HouseSolar";
-import {HouseSolarBattery} from "./HouseSolarBattery";
+import {HouseBattery} from "./HouseBattery.js";
+import {HouseSolar} from "./HouseSolar.js";
+import {HouseSolarBattery} from "./HouseSolarBattery.js";
 
 export class PowerConsumer extends Tile {
     static houseCount = 0;
