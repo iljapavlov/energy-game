@@ -110,9 +110,7 @@ const getCurrentElectricityPrice = (production, consumption) => {
     } else {
         priceMultiplier = 1 - 0.1 * (productionMWh / safeConsumptionMWh);
     }
-    console.log(price_multiplier, 'multipl', price_multiplier * BASE_ELECTRICITTY_PRICE, 'price')
     console.log(production, consumption)
-    const finalPrice = Math.max(price_multiplier * BASE_ELECTRICITTY_PRICE, BASE_ELECTRICITTY_PRICE);
 
     // Calculate the adjusted price
     const adjustedPrice = priceMultiplier * BASE_ELECTRICITY_PRICE;
@@ -150,10 +148,10 @@ function preload() {
 
     // Chemical Battery Images
     this.load.image('battery-empty', './img/battery-statuses/battery_0.png');
-    this.load.image('battery-one-bar', './img/battery-statuses/battery_0.png');
-    this.load.image('battery-two-bars', './img/battery-statuses/battery_0.png');
-    this.load.image('battery-three-bars', './img/battery-statuses/battery_0.png');
-    this.load.image('battery-full', './img/battery-statuses/battery_0.png');
+    this.load.image('battery-one-bar', './img/battery-statuses/battery_25.png');
+    this.load.image('battery-two-bars', './img/battery-statuses/battery_50.png');
+    this.load.image('battery-three-bars', './img/battery-statuses/battery_75.png');
+    this.load.image('battery-full', './img/battery-statuses/battery_100.png');
 }
 
 /**
@@ -264,6 +262,7 @@ function create() {
     this.input.keyboard.on('keydown-P', pauseGame, this);
     this.input.keyboard.on('keydown-R', resumeGame, this);
     timeText = this.add.text(300, 20, 'Hour: ' + hourCounter, {fontSize: '18px', fill: '#fff'});
+    currentElectricityPrice = getCurrentElectricityPrice(currentProduction, currentConsumption);
 
     // consumptionText = this.add.text(500, 20, 'Consumption: ' + currentConsumption, { fontSize: '18px', fill: '#fff' });
     // productionText = this.add.text(700, 20, 'Production: ' + currentProduction, { fontSize: '18px', fill: '#fff' });
@@ -368,7 +367,6 @@ function onTick() {
         updateGridPower();
         updatePowerStorage();
 
-        currentElectricityPrice = getCurrentElectricityPrice(currentProduction, currentConsumption);
         electricityText.setText('Electricity price: ' + currentElectricityPrice + ' € / kWh');
         gridPowerText.setText('Grid Power ' + gridPower + ' kW');
 
