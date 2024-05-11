@@ -32,7 +32,7 @@ export class Tile {
         console.log(TILE_CONFIG[tileName], tileName)
 
         const bgColor = TILE_CONFIG[tileName].bgColor;
-        const image = TILE_CONFIG[tileName].image;
+        var image = TILE_CONFIG[tileName].image;
         // draw tile bg
         this.bg = scene.add.rectangle(
             100 + j * Tile.TILE_SIZE,
@@ -54,6 +54,19 @@ export class Tile {
 
         // Common pointerdown event for both rectangle and image cases
         this.bg.on('pointerdown', () => this.select());
+    }
+
+    setImage(scene, imageKey) {
+        if (this.tile) {
+            this.tile.destroy(); // Destroy the current image
+        }
+        this.tile = scene.add.image(
+            100 + this.j * Tile.TILE_SIZE,
+            100 + this.i * Tile.TILE_SIZE,
+            imageKey
+        ).setInteractive();
+        const rescale = TILE_CONFIG[this.name] ? TILE_CONFIG[this.name].rescale || 0.2 : 0.2;
+        this.tile.setScale(rescale).setDepth(1);
     }
 
     /**

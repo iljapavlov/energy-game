@@ -5,30 +5,33 @@
  */
 
 // Import necessary modules and classes
-import { EleringDataFetcher } from './EleringDataFetcher.js';
-import { Tile } from './Tile.js';
-import { TransactionHistory } from './TransactionHistory.js';
-import { levelDesigns } from "./levelDesigns.js";
-import { Connector } from "./tiletypes/powerConnector/Connector.js";
-import { House } from './tiletypes/powerConsumer/House.js';
-import { HouseBattery } from "./tiletypes/powerConsumer/HouseBattery.js";
-import { HouseSolar } from "./tiletypes/powerConsumer/HouseSolar.js";
-import { HouseSolarBattery } from "./tiletypes/powerConsumer/HouseSolarBattery.js";
-import { PowerConsumer } from "./tiletypes/powerConsumer/PowerConsumer.js";
-import { Coal } from "./tiletypes/powerProducers/fossil/Coal.js";
-import { Gas } from "./tiletypes/powerProducers/fossil/Gas.js";
-import { Nuclear } from "./tiletypes/powerProducers/fossil/Nuclear.js";
-import { Biomass } from "./tiletypes/powerProducers/renewable/Biomass.js";
-import { Geothermal } from "./tiletypes/powerProducers/renewable/Geothermal.js";
-import { Hydro } from "./tiletypes/powerProducers/renewable/Hydro.js";
-import { SolarPanel } from './tiletypes/powerProducers/renewable/SolarPanel.js';
-import { Tidal } from "./tiletypes/powerProducers/renewable/Tidal.js";
-import { Windmill } from "./tiletypes/powerProducers/renewable/Windmill.js";
-import { ChemicalBattery } from "./tiletypes/powerStorage/ChemicalBattery.js";
-import { Forest } from "./tiletypes/terrain/Forest.js";
-import { Plains } from './tiletypes/terrain/Plains.js';
-import { Sea } from './tiletypes/terrain/Sea.js';
-import { WeatherManager } from './weather/WeatherManager.js';
+import {Tile} from './Tile.js';
+import {TransactionHistory} from './TransactionHistory.js';
+import {House} from './tiletypes/powerConsumer/House.js';
+import {Plains} from './tiletypes/terrain/Plains.js';
+import {Sea} from './tiletypes/terrain/Sea.js';
+import {SolarPanel} from './tiletypes/powerProducers/renewable/SolarPanel.js';
+import {EleringDataFetcher} from './EleringDataFetcher.js';
+import {PowerConsumer} from "./tiletypes/powerConsumer/PowerConsumer.js";
+import {Connector} from "./tiletypes/powerConnector/Connector.js";
+import {HouseBattery} from "./tiletypes/powerStorage/HouseBattery.js";
+import {HouseSolar} from "./tiletypes/powerConsumer/HouseSolar.js";
+import {HouseSolarBattery} from "./tiletypes/powerStorage/HouseSolarBattery.js";
+import {Coal} from "./tiletypes/powerProducers/fossil/Coal.js";
+import {Gas} from "./tiletypes/powerProducers/fossil/Gas.js";
+import {Geothermal} from "./tiletypes/powerProducers/renewable/Geothermal.js";
+import {Hydro} from "./tiletypes/powerProducers/renewable/Hydro.js";
+import {Biomass} from "./tiletypes/powerProducers/renewable/Biomass.js";
+import {Nuclear} from "./tiletypes/powerProducers/fossil/Nuclear.js";
+import {Tidal} from "./tiletypes/powerProducers/renewable/Tidal.js";
+import {Windmill} from "./tiletypes/powerProducers/renewable/Windmill.js";
+import {ChemicalBattery} from "./tiletypes/powerStorage/ChemicalBattery.js";
+import {Forest} from "./tiletypes/terrain/Forest.js";
+import {levelDesigns} from "./levelDesigns.js";
+import {GravityBattery} from "./tiletypes/powerStorage/GravityBattery.js";
+import {PowerStorage} from "./tiletypes/powerStorage/PowerStorage.js";
+import {PowerProducer} from "./tiletypes/powerProducers/PowerProducer.js";
+import {WeatherManager} from './weather/WeatherManager.js';
 
 /**
  * Configuration object for the Phaser game.
@@ -45,12 +48,6 @@ var config = {
  */
 var money = 10000;
 
-/**
- * The costs of different colors in the game.
- */
-var costs = {
-    Blue: 100, Pink: 200, Yellow: 150, Green: 50
-};
 
 /**
  * The Phaser game instance.
@@ -76,6 +73,11 @@ var timeText; // To update the time display dynamically
 // var consumptionText;
 // var productionText;
 var electricityText;
+var gridPowerText;
+var gridPower = 0;
+let colorCharge = 0xDF9FF;
+let colorDischarge = 0xFF9F9F;
+let colorIdle = 0x9F9FFF;
 
 const getCurrentConsumption = () => {
     return HOURLY_CONSUMPTION[hourCounter % HOURLY_CONSUMPTION.length] * PowerConsumer.houseCount;
@@ -95,7 +97,7 @@ const getCurrentElectricityPrice = (production, consumption) => {
     } else {
         price_multiplier = 1 - (production - consumption) / (production + 1e-4);
     }
-    console.log(price_multiplier, 'multipl', price_multiplier*BASE_ELECTRICITTY_PRICE, 'price')
+    console.log(price_multiplier, 'multipl', price_multiplier * BASE_ELECTRICITTY_PRICE, 'price')
     console.log(production, consumption)
     const finalPrice = Math.max(price_multiplier * BASE_ELECTRICITTY_PRICE, BASE_ELECTRICITTY_PRICE);
     return finalPrice.toFixed(3);
@@ -124,6 +126,13 @@ function preload() {
     this.load.image('moon', './img/weather/moon.png');
     this.load.image('cloudySun', './img/weather/cloudySun.png');
     this.load.image('storm', './img/weather/storm.png');
+
+    // Chemical Battery Images
+    this.load.image('battery-empty', './img/battery-statuses/battery_0.png');
+    this.load.image('battery-one-bar', './img/battery-statuses/battery_0.png');
+    this.load.image('battery-two-bars', './img/battery-statuses/battery_0.png');
+    this.load.image('battery-three-bars', './img/battery-statuses/battery_0.png');
+    this.load.image('battery-full', './img/battery-statuses/battery_0.png');
 }
 
 /**
@@ -154,12 +163,14 @@ function create() {
                     break;
                 case 'HouseBattery':
                     tile = new HouseBattery(this, i, j);
+                    tile.setFillStyle(colorIdle, 1)
                     break;
                 case 'HouseSolar':
                     tile = new HouseSolar(this, i, j);
                     break;
                 case 'HouseSolarBattery':
                     tile = new HouseSolarBattery(this, i, j);
+                    tile.setFillStyle(colorIdle, 1)
                     break;
                 case 'Coal':
                     tile = new Coal(this, i, j);
@@ -190,15 +201,14 @@ function create() {
                     break;
                 case 'ChemicalBattery':
                     tile = new ChemicalBattery(this, i, j);
+                    tile.bg.setFillStyle(colorIdle, 1); // TODO change once ChemicalBattery has a image and not a color.
                     break;
                 case 'GravityBattery':
-                    tile = new ChemicalBattery(this, i, j);
+                    tile = new GravityBattery(this, i, j);
+                    tile.setFillStyle(colorIdle, 1)
                     break;
                 case 'Forest':
                     tile = new Forest(this, i, j);
-                    break;
-                case 'Mountain':
-                    tile = new Mountain(this, i, j);
                     break;
                 case 'Plains':
                     tile = new Plains(this, i, j);
@@ -214,15 +224,6 @@ function create() {
         }
     }
 
-    // Update Connector Tile appearances
-    // for (let i = 0; i < tiles.length; i++) {
-    //     for (let j = 0; j < tiles[i].length; j++) {
-    //         if (tiles[i][j] instanceof Connector) {
-    //             tiles[i][j].updateAppearance();
-    //         }
-    //     }
-    // }
-
     // Initial selection
     tiles[0][0].select();
 
@@ -235,12 +236,6 @@ function create() {
     transactionHistory = new TransactionHistory();
     transactionHistory.addTransaction(money, 'income', 'Initial money')
 
-
-    // Create buttons for changing tile color
-    createColorButton(this, 800, 100, 0x0000FF, 'Blue', costs.Blue);
-    createColorButton(this, 800, 160, 0xFF1493, 'Pink', costs.Pink);
-    createColorButton(this, 800, 220, 0xFFFF00, 'Yellow', costs.Yellow);
-    createColorButton(this, 800, 280, 0x00FF00, 'Green', costs.Green);
 
     // Create a looped timer event that triggers every second
     gameTimer = this.time.addEvent({delay: 1000, callback: onTick, callbackScope: this, loop: true});
@@ -255,31 +250,144 @@ function create() {
         fontSize: '18px', fill: '#fff'
     });
 
+    gridPowerText = this.add.text(500, 40, 'Grid Power ' + gridPower, {
+        fontSize: '18px', fill: '#fff'
+    });
+
+
+    // Step 1: Create a new container
+    let buttonContainer = this.add.container(this.game.config.width - 100, this.game.config.height - 100);
+
+
+    // Step 2: Create a few buttons
+    let setToCharge = this.add.rectangle(0, 0, 80, 30, colorCharge).setInteractive();
+    let setToDischarge = this.add.rectangle(0, -40, 80, 30, colorDischarge).setInteractive();
+    let setToIdle = this.add.rectangle(0, -80, 80, 30, colorIdle).setInteractive();
+
+    // Add text to the buttons
+    let textCharge = this.add.text(0, 0, 'Charge', {color: '#000000', fontSize: '16px'}).setOrigin(0.5);
+    let textDischarge = this.add.text(0, -40, 'Discharge', {color: '#000000', fontSize: '16px'}).setOrigin(0.5);
+    let textIdle = this.add.text(0, -80, 'Idle', {color: '#000000', fontSize: '16px'}).setOrigin(0.5);
+
+    // Step 3: Add the buttons and text to the container
+    buttonContainer.add([setToCharge, setToDischarge, setToIdle, textCharge, textDischarge, textIdle]);
+
+    // Step 4: Add event listeners to the buttons
+    setToCharge.on('pointerdown', function () {
+        if (Tile.selectedTile && Tile.selectedTile instanceof PowerStorage) {
+            Tile.selectedTile.status = 'charging';
+            Tile.selectedTile.bg.setFillStyle(colorCharge, 1);
+        }
+    });
+
+    setToDischarge.on('pointerdown', function () {
+        if (Tile.selectedTile && Tile.selectedTile instanceof PowerStorage) {
+            Tile.selectedTile.status = 'discharging';
+            Tile.selectedTile.bg.setFillStyle(colorDischarge, 1);
+        }
+    });
+
+    setToIdle.on('pointerdown', function () {
+        if (Tile.selectedTile && Tile.selectedTile instanceof PowerStorage) {
+            Tile.selectedTile.status = 'idle';
+            Tile.selectedTile.bg.setFillStyle(colorIdle, 1);
+        }
+    });
+
     // ALL THE WEATHER MANAGER STUFF
     weatherManager = new WeatherManager(this);
 }
 
-/**
- * The onTick function is called every second and represents the game logic that should happen every tick.
- */
+function updateGridPower() {
+    gridPower = 0;
+    // Update the grid power
+    gridPower += tiles
+        .flat()
+        .filter(tile => tile instanceof PowerProducer && typeof tile.powerOutput === 'number')
+        .reduce((sum, tile) => sum + tile.powerOutput, 0);
+    gridPower -= tiles
+        .flat()
+        .filter(tile => tile instanceof PowerConsumer && typeof tile.powerConsumption === 'number')
+        .reduce((sum, tile) => sum + tile.powerConsumption, 0);
+}
+
+function updatePowerStorage() {
+    // Update the batteries
+    tiles
+        .flat()
+        .filter(tile => tile instanceof PowerStorage)
+        .forEach(tile => {
+            if (tile.status === 'charging' && gridPower > 0) {
+                let chargePower = Math.min(gridPower, tile.storageCapacity - tile.currentPower);
+                tile.charge(chargePower);
+                gridPower -= chargePower; // Decrease gridPower by the amount of power charged
+            } else if (tile.status === 'discharging' && tile.currentPower > 0) {
+                let dischargePower = Math.min(tile.currentPower, gridPower);
+                tile.discharge(dischargePower);
+                gridPower += dischargePower; // Increase gridPower by the amount of power discharged
+            } else if (tile.status === 'idle') {
+                tile.idle();
+                console.log('Idle', tile.currentPower, tile.storageCapacity)
+            }
+        });
+}
+
 function onTick() {
     // Logic that should happen every tick
-    // For example, decrease money every tick:
+    if (typeof gridPower !== 'number') {
+        console.error('gridPower is not a number:', gridPower);
+        return;
+    }
     if (!paused) {
         hourCounter++;
         currentConsumption = getCurrentConsumption();
-        // consumptionText.setText('Consumption: ' + currentConsumption);
 
         currentProduction = getCurrentProduction();
-        // productionText.setText('Production: ' + currentProduction);
 
-        console.log('curr cons prod', currentConsumption, currentProduction);
+        updateGridPower();
+        updatePowerStorage();
+
         currentElectricityPrice = getCurrentElectricityPrice(currentProduction, currentConsumption);
         electricityText.setText('Electricity price: ' + currentElectricityPrice + ' € / kWh');
+        gridPowerText.setText('Grid Power ' + gridPower + ' kW');
 
         transactionHistory.addTransaction(currentConsumption, 'expense', 'Hourly expense');
         updateMoneyDisplay();
         updateTimeDisplay();
+        // Update the color of all PowerConsumers based on their status
+
+        tiles.flat().filter(tile => tile instanceof PowerStorage).forEach(tile => {
+            switch (tile.status) {
+                case 'charging':
+                    tile.bg.setFillStyle(colorCharge, 1);
+                    break;
+                case 'discharging':
+                    tile.bg.setFillStyle(colorDischarge, 1);
+                    break;
+                case 'idle':
+                    tile.bg.setFillStyle(colorIdle, 1);
+                    break;
+                default:
+                    tile.bg.setFillStyle(0x000000, 1);
+                    break;
+            }
+        });
+
+        tiles.flat().filter(tile => tile instanceof PowerStorage).forEach(tile => {
+            let chargePercentage = tile.currentPower / tile.storageCapacity;
+
+            if (chargePercentage === 0) {
+                tile.setImage(this, 'battery-empty');
+            } else if (chargePercentage < 0.25) {
+                tile.setImage(this, 'battery-one-bar');
+            } else if (chargePercentage < 0.5) {
+                tile.setImage(this, 'battery-two-bars');
+            } else if (chargePercentage < 0.75) {
+                tile.setImage(this, 'battery-three-bars');
+            } else {
+                tile.setImage(this, 'battery-full');
+            }
+        });
 
         // Set random weather
         if (hourCounter % 6 === 0) {
