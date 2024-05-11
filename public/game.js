@@ -70,8 +70,15 @@ const getCurrentConsumption = () => {
 const getCurrentProduction = () => {
     return HOURLY_PRODUCTION[hourCounter % HOURLY_PRODUCTION.length] * getNumberOfTileColor('aqua');
 }
+const getCurrentElectricityPrice = (production, consumption) => {
+    basePrice = 0.1;
+    price_multiplier = 1 + (consumption - production) / production
+    return price_multiplier * basePrice;
+}
+
 let currentConsumption = getCurrentConsumption();
 let currentProduction = getCurrentProduction();
+let currentElectricityPrice = getCurrentElectricityPrice();
 
 /**
  * The preload function is part of the Phaser game lifecycle and is used to load assets.
