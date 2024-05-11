@@ -2,6 +2,8 @@ import {Tile} from './Tile.js';
 import { Sea } from './tiletypes/Sea.js';
 import { Plains } from './tiletypes/Plains.js';
 import { City } from './tiletypes/City.js';
+import {TransactionHistory} from './TransactionHistory.js';
+
 
 var config = {
     type: Phaser.AUTO,
@@ -31,6 +33,8 @@ var tiles = []; // 2D array of tiles
 var gameTimer;
 var paused = true;
 var dayCounter = 0;
+let transactionHistory;
+
 
 function preload() {
 }
@@ -77,6 +81,10 @@ function create() {
 
     // money related things
     moneyText = this.add.text(10, 20, 'Money: $' + money, { fontSize: '20px', fill: '#fff' });
+    // Initialize the transaction history
+    transactionHistory = new TransactionHistory();
+    transactionHistory.addTransaction(10000, 'income', 'Initial money')
+
 
     // Create buttons for changing tile color
     createColorButton(this, 800, 100, 0x0000FF, 'Blue', costs.Blue);
@@ -99,7 +107,7 @@ function onTick() {
     // Logic that should happen every tick
     // For example, decrease money every tick:
     if (!paused) {
-        money -= 10;
+        transactionHistory.addTransaction(10, 'expense', 'Daily expense');
         updateMoneyDisplay();
         dayCounter++;
         updateTimeDisplay();
@@ -125,13 +133,14 @@ function createColorButton(scene, x, y, color, label, cost) {
         if (Tile.selectedTile && money >= cost) {
             Tile.selectedTile.tile.setFillStyle(color, 1);
             money -= cost;
+            transactionHistory.addTransaction(-cost, 'expense', `Bought ${label} color`);
             updateMoneyDisplay();
         }
     });
 }
 
 function updateMoneyDisplay() {
-    moneyText.setText('Money: $' + money);
+    moneyText.setText('Money: $' + transactionHistory.getBalance());
 }
 
 function updateTimeDisplay() {
