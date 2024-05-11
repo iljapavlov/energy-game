@@ -1,4 +1,4 @@
-import { Tile } from "../Tile.js";
+import { Tile } from "../../Tile.js";
 
 export class Plains extends Tile {
     constructor(scene, i, j) {
