@@ -86,20 +86,38 @@ const getCurrentProduction = () => {
 const getNumberOfTileColor = (tileColor) => {
     return tiles.flat().filter(tile => tile.color === tileColor).length;
 }
-const getCurrentElectricityPrice = (production, consumption) => {
-    const BASE_ELECTRICITTY_PRICE = 0.1; // TODO change this
 
-    let price_multiplier;
-    if (consumption > production) {
-        price_multiplier = 1 + (consumption - production) / (production + 1e-4);
+const getCurrentElectricityPrice = (production, consumption) => {
+    const BASE_ELECTRICITY_PRICE = 1; // Base price per MWh in dollars
+
+    // Convert kWh to MWh for both production and consumption
+    const productionMWh = production / 1000;
+    const consumptionMWh = consumption / 1000;
+
+    // Prevent division by zero by ensuring a minimum value for production and consumption
+    const safeProductionMWh = Math.max(productionMWh, 0.001);
+    const safeConsumptionMWh = Math.max(consumptionMWh, 0.001);
+
+    // Calculate the net consumption (consumption - production)
+    const netConsumptionMWh = consumptionMWh - productionMWh;
+
+    // Determine the price multiplier based on the net consumption
+    let priceMultiplier;
+    if (netConsumptionMWh >= 0) {
+        priceMultiplier = 1 + 0.1 * (netConsumptionMWh / safeProductionMWh);
     } else {
-        price_multiplier = 1 - (production - consumption) / (production + 1e-4);
+        priceMultiplier = 1 - 0.1 * (productionMWh / safeConsumptionMWh);
     }
-    console.log(price_multiplier, 'multipl', price_multiplier*BASE_ELECTRICITTY_PRICE, 'price')
-    console.log(production, consumption)
-    const finalPrice = Math.max(price_multiplier * BASE_ELECTRICITTY_PRICE, BASE_ELECTRICITTY_PRICE);
+
+    // Calculate the adjusted price
+    const adjustedPrice = priceMultiplier * BASE_ELECTRICITY_PRICE;
+
+    // Ensure the final price is not less than the base price and does not fall into negative
+    const finalPrice = Math.max(adjustedPrice, BASE_ELECTRICITY_PRICE);
+
+    // Return the final price rounded to three decimal places
     return finalPrice.toFixed(3);
-}
+};
 
 let currentConsumption = getCurrentConsumption();
 let currentProduction = getCurrentProduction();
