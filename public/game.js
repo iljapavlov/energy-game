@@ -59,6 +59,29 @@ var timeText; // To update the time display dynamically
 // var productionText;
 var electricityText;
 
+const getCurrentConsumption = () => {
+    return HOURLY_CONSUMPTION[hourCounter % HOURLY_CONSUMPTION.length] * House.houseCount;
+}
+const getCurrentProduction = () => {
+    return HOURLY_PRODUCTION[hourCounter % HOURLY_PRODUCTION.length] * getNumberOfTileColor('aqua');
+}
+const getNumberOfTileColor = (tileColor) => {
+    return tiles.flat().filter(tile => tile.color === tileColor).length;
+}
+const getCurrentElectricityPrice = (production, consumption) => {
+    const BASE_ELECTRICITTY_PRICE = 0.1; // TODO change this
+
+    let price_multiplier;
+    if (consumption > production) {
+        price_multiplier = 1 + (consumption - production) / (production + 1e-4);
+    } else {
+        price_multiplier = 1 - (production - consumption) / (production + 1e-4);
+    }
+
+    const finalPrice = Math.max(price_multiplier * BASE_ELECTRICITTY_PRICE, BASE_ELECTRICITTY_PRICE);
+    return finalPrice.toFixed(3);
+}
+
 let currentConsumption = getCurrentConsumption();
 let currentProduction = getCurrentProduction();
 console.log(currentConsumption, currentProduction, 'c p')
@@ -265,30 +288,4 @@ async function initializeDataFetcher() {
         HOURLY_CONSUMPTION[hour] = eleringDataFetcher.getConsumptionForHour(hour);
         HOURLY_PRODUCTION[hour] = eleringDataFetcher.getProductionForHour(hour);
     }
-}
-
-
-const getNumberOfTileColor = (tileColor) => {
-    return tiles.flat().filter(tile => tile.color === tileColor).length;
-}
-
-const getCurrentConsumption = () => {
-
-    return HOURLY_CONSUMPTION[hourCounter % HOURLY_CONSUMPTION.length] * House.houseCount;
-}
-const getCurrentProduction = () => {
-    return HOURLY_PRODUCTION[hourCounter % HOURLY_PRODUCTION.length] * getNumberOfTileColor('aqua');
-}
-const getCurrentElectricityPrice = (production, consumption) => {
-    const BASE_ELECTRICITTY_PRICE = 0.1; // TODO change this
-
-    let price_multiplier;
-    if (consumption > production) {
-        price_multiplier = 1 + (consumption - production) / (production + 1e-4);
-    } else {
-        price_multiplier = 1 - (production - consumption) / (production + 1e-4);
-    }
-
-    const finalPrice = Math.max(price_multiplier * BASE_ELECTRICITTY_PRICE, BASE_ELECTRICITTY_PRICE);
-    return finalPrice.toFixed(3);
 }
