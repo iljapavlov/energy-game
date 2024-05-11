@@ -83,7 +83,7 @@ function create() {
     moneyText = this.add.text(10, 20, 'Money: $' + money, { fontSize: '20px', fill: '#fff' });
     // Initialize the transaction history
     transactionHistory = new TransactionHistory();
-    transactionHistory.addTransaction(10000, 'income', 'Initial money')
+    transactionHistory.addTransaction(money, 'income', 'Initial money')
 
 
     // Create buttons for changing tile color
@@ -130,10 +130,9 @@ function createColorButton(scene, x, y, color, label, cost) {
     scene.add.text(x + 45, y - 8, label + costText, { color: '#ffffff', fontSize: '16px' }).setOrigin(0.5);
 
     button.on('pointerdown', function () {
-        if (Tile.selectedTile && money >= cost) {
+        if (Tile.selectedTile && transactionHistory.getBalance() >= cost) {
             Tile.selectedTile.tile.setFillStyle(color, 1);
-            money -= cost;
-            transactionHistory.addTransaction(-cost, 'expense', `Bought ${label} color`);
+            transactionHistory.addTransaction(cost, 'expense', `Bought ${label} color`);
             updateMoneyDisplay();
         }
     });
