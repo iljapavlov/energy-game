@@ -5,29 +5,22 @@
  */
 
 // Import necessary modules and classes
-import { Tile } from './Tile.js';
-import { TransactionHistory } from './TransactionHistory.js';
-import { House } from './tiletypes/powerConsumer/House.js';
-import { Plains } from './tiletypes/Plains.js';
-import { Sea } from './tiletypes/Sea.js';
-import { SolarPanel } from './tiletypes/powerProducers/renewable/SolarPanel.js';
-import { EleringDataFetcher } from './EleringDataFetcher.js';
+import {Tile} from './Tile.js';
+import {TransactionHistory} from './TransactionHistory.js';
+import {House} from './tiletypes/powerConsumer/House.js';
+import {Plains} from './tiletypes/Plains.js';
+import {Sea} from './tiletypes/Sea.js';
+import {SolarPanel} from './tiletypes/powerProducers/renewable/SolarPanel.js';
+import {EleringDataFetcher} from './EleringDataFetcher.js';
 
 /**
  * Configuration object for the Phaser game.
  * Includes the type of renderer to use, the dimensions of the game, the parent HTML element, the game scene, and the background color.
  */
 var config = {
-    type: Phaser.AUTO,
-    width: 900,
-    height: 600,
-    parent: 'game',
-    scene: {
-        preload: preload,
-        create: create,
-        update: update
-    },
-    backgroundColor: "#242424",
+    type: Phaser.AUTO, width: 900, height: 600, parent: 'game', scene: {
+        preload: preload, create: create, update: update
+    }, backgroundColor: "#242424",
 };
 
 /**
@@ -39,10 +32,7 @@ var money = 10000;
  * The costs of different colors in the game.
  */
 var costs = {
-    Blue: 100,
-    Pink: 200,
-    Yellow: 150,
-    Green: 50
+    Blue: 100, Pink: 200, Yellow: 150, Green: 50
 };
 
 /**
@@ -61,43 +51,13 @@ let eleringDataFetcher;
 let HOURLY_CONSUMPTION = [];
 let HOURLY_PRODUCTION = [];
 
-async function initializeDataFetcher() {
-    eleringDataFetcher = new EleringDataFetcher();
-    await eleringDataFetcher.fetchData();
-
-    for (let hour = 0; hour < 24; hour++) {
-        HOURLY_CONSUMPTION[hour] = eleringDataFetcher.getConsumptionForHour(hour);
-        HOURLY_PRODUCTION[hour] = eleringDataFetcher.getProductionForHour(hour);
-    }
-}
-
 var hourCounter = 0;
 
-
-const getNumberOfTileColor = (tileColor) => {
-    return tiles.flat().filter(tile => tile.color === tileColor).length;
-}
-
-const getCurrentConsumption = () => {
-
-    return HOURLY_CONSUMPTION[hourCounter % HOURLY_CONSUMPTION.length] * House.houseCount;
-}
-const getCurrentProduction = () => {
-    return HOURLY_PRODUCTION[hourCounter % HOURLY_PRODUCTION.length] * getNumberOfTileColor('aqua');
-}
-const getCurrentElectricityPrice = (production, consumption) => {
-    const BASE_ELECTRICITTY_PRICE = 0.1; // TODO change this
-
-    let price_multiplier;
-    if (consumption > production) {
-        price_multiplier = 1 + (consumption - production) / (production + 1e-4);
-    } else {
-        price_multiplier = 1 - (production - consumption) / (production + 1e-4);
-    }
-
-    const finalPrice = Math.max(price_multiplier * BASE_ELECTRICITTY_PRICE, BASE_ELECTRICITTY_PRICE);
-    return finalPrice.toFixed(3);
-}
+var moneyText; // To update the money display dynamically
+var timeText; // To update the time display dynamically
+// var consumptionText;
+// var productionText;
+var electricityText;
 
 let currentConsumption = getCurrentConsumption();
 let currentProduction = getCurrentProduction();
@@ -114,20 +74,14 @@ function preload() {
     this.load.image('house', './img/house.png');
 }
 
-var moneyText; // To update the money display dynamically
-var timeText; // To update the time display dynamically
-// var consumptionText;
-// var productionText;
-var electricityText;
-
 /**
  * The create function is part of the Phaser game lifecycle and is used to set up the game scene.
  */
 function create() {
     const types = ['Plains', 'House', 'Sea', 'SolarPanel'];
     initializeDataFetcher().then(() => {
-        console.log("Prod: "+HOURLY_PRODUCTION);
-        console.log("Cons: "+HOURLY_CONSUMPTION);
+        console.log("Prod: " + HOURLY_PRODUCTION);
+        console.log("Cons: " + HOURLY_CONSUMPTION);
     });
     // Creating the top bar
     this.add.rectangle(0, 0, 800, 40, 0x333333).setOrigin(0);
@@ -166,7 +120,7 @@ function create() {
     cursors = this.input.keyboard.createCursorKeys();
 
     // money related things
-    moneyText = this.add.text(10, 20, 'Money: €' + money, { fontSize: '20px', fill: '#fff' });
+    moneyText = this.add.text(10, 20, 'Money: €' + money, {fontSize: '20px', fill: '#fff'});
     // Initialize the transaction history
     transactionHistory = new TransactionHistory();
     transactionHistory.addTransaction(money, 'income', 'Initial money')
@@ -179,15 +133,17 @@ function create() {
     createColorButton(this, 800, 280, 0x00FF00, 'Green', costs.Green);
 
     // Create a looped timer event that triggers every second
-    gameTimer = this.time.addEvent({ delay: 1000, callback: onTick, callbackScope: this, loop: true });
+    gameTimer = this.time.addEvent({delay: 1000, callback: onTick, callbackScope: this, loop: true});
     // Add keyboard inputs for pausing and resuming the game
     this.input.keyboard.on('keydown-P', pauseGame, this);
     this.input.keyboard.on('keydown-R', resumeGame, this);
-    timeText = this.add.text(300, 20, 'Hour: ' + hourCounter, { fontSize: '18px', fill: '#fff' });
+    timeText = this.add.text(300, 20, 'Hour: ' + hourCounter, {fontSize: '18px', fill: '#fff'});
 
     // consumptionText = this.add.text(500, 20, 'Consumption: ' + currentConsumption, { fontSize: '18px', fill: '#fff' });
     // productionText = this.add.text(700, 20, 'Production: ' + currentProduction, { fontSize: '18px', fill: '#fff' });
-    electricityText =  this.add.text(500, 20, 'Electricity price: ' + currentElectricityPrice, { fontSize: '18px', fill: '#fff' });
+    electricityText = this.add.text(500, 20, 'Electricity price: ' + currentElectricityPrice, {
+        fontSize: '18px', fill: '#fff'
+    });
 }
 
 /**
@@ -242,7 +198,7 @@ function resumeGame() {
 function createColorButton(scene, x, y, color, label, cost) {
     let button = scene.add.rectangle(x, y, 80, 30, color).setInteractive();
     let costText = ' - $' + cost;
-    scene.add.text(x + 45, y - 8, label + costText, { color: '#ffffff', fontSize: '16px' }).setOrigin(0.5);
+    scene.add.text(x + 45, y - 8, label + costText, {color: '#ffffff', fontSize: '16px'}).setOrigin(0.5);
 
     button.on('pointerdown', function () {
         if (Tile.selectedTile && transactionHistory.getBalance() >= cost) {
@@ -300,3 +256,39 @@ function updateSelection(x, y) {
     }
 }
 
+
+async function initializeDataFetcher() {
+    eleringDataFetcher = new EleringDataFetcher();
+    await eleringDataFetcher.fetchData();
+
+    for (let hour = 0; hour < 24; hour++) {
+        HOURLY_CONSUMPTION[hour] = eleringDataFetcher.getConsumptionForHour(hour);
+        HOURLY_PRODUCTION[hour] = eleringDataFetcher.getProductionForHour(hour);
+    }
+}
+
+
+const getNumberOfTileColor = (tileColor) => {
+    return tiles.flat().filter(tile => tile.color === tileColor).length;
+}
+
+const getCurrentConsumption = () => {
+
+    return HOURLY_CONSUMPTION[hourCounter % HOURLY_CONSUMPTION.length] * House.houseCount;
+}
+const getCurrentProduction = () => {
+    return HOURLY_PRODUCTION[hourCounter % HOURLY_PRODUCTION.length] * getNumberOfTileColor('aqua');
+}
+const getCurrentElectricityPrice = (production, consumption) => {
+    const BASE_ELECTRICITTY_PRICE = 0.1; // TODO change this
+
+    let price_multiplier;
+    if (consumption > production) {
+        price_multiplier = 1 + (consumption - production) / (production + 1e-4);
+    } else {
+        price_multiplier = 1 - (production - consumption) / (production + 1e-4);
+    }
+
+    const finalPrice = Math.max(price_multiplier * BASE_ELECTRICITTY_PRICE, BASE_ELECTRICITTY_PRICE);
+    return finalPrice.toFixed(3);
+}
