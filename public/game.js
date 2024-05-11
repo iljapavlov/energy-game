@@ -8,10 +8,11 @@
 import {Tile} from './Tile.js';
 import {TransactionHistory} from './TransactionHistory.js';
 import {House} from './tiletypes/powerConsumer/House.js';
-import {Plains} from './tiletypes/Plains.js';
-import {Sea} from './tiletypes/Sea.js';
+import {Plains} from './tiletypes/terrain/Plains.js';
+import {Sea} from './tiletypes/terrain/Sea.js';
 import {SolarPanel} from './tiletypes/powerProducers/renewable/SolarPanel.js';
 import {EleringDataFetcher} from './EleringDataFetcher.js';
+import {PowerConsumer} from "./tiletypes/powerConsumer/PowerConsumer";
 
 /**
  * Configuration object for the Phaser game.
@@ -60,7 +61,7 @@ var timeText; // To update the time display dynamically
 var electricityText;
 
 const getCurrentConsumption = () => {
-    return HOURLY_CONSUMPTION[hourCounter % HOURLY_CONSUMPTION.length] * House.houseCount;
+    return HOURLY_CONSUMPTION[hourCounter % HOURLY_CONSUMPTION.length] * PowerConsumer.houseCount;
 }
 const getCurrentProduction = () => {
     return HOURLY_PRODUCTION[hourCounter % HOURLY_PRODUCTION.length] * getNumberOfTileColor('aqua');
