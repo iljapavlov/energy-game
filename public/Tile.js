@@ -27,6 +27,7 @@ export class Tile {
     constructor(scene, i, j, colorOrImg) {
         this.i = i;
         this.j = j;
+        this.color = colorOrImg;
 
         const hexColor = Tile.mapColorToHex(colorOrImg);
         if (!!hexColor) {
