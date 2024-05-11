@@ -1,10 +1,20 @@
+/**
+ * @file game.js
+ * This file contains the main game logic for a tile-based game.
+ * It uses the Phaser game framework and includes the creation of the game scene, game objects, and game logic.
+ */
+
+// Import necessary modules and classes
 import {Tile} from './Tile.js';
 import { Sea } from './tiletypes/Sea.js';
 import { Plains } from './tiletypes/Plains.js';
 import { City } from './tiletypes/City.js';
 import {TransactionHistory} from './TransactionHistory.js';
 
-
+/**
+ * Configuration object for the Phaser game.
+ * Includes the type of renderer to use, the dimensions of the game, the parent HTML element, the game scene, and the background color.
+ */
 var config = {
     type: Phaser.AUTO,
     width: 900,
@@ -18,7 +28,14 @@ var config = {
     backgroundColor: "#242424",
 };
 
-var money = 10000; // Starting amount of money
+/**
+ * The player's starting amount of money.
+ */
+var money = 10000;
+
+/**
+ * The costs of different colors in the game.
+ */
 var costs = {
     Blue: 100,
     Pink: 200,
@@ -26,8 +43,12 @@ var costs = {
     Green: 50
 };
 
-
+/**
+ * The Phaser game instance.
+ */
 var game = new Phaser.Game(config);
+
+// Other game variables
 var cursors; // To hold the cursor keys
 var tiles = []; // 2D array of tiles
 var gameTimer;
@@ -35,13 +56,18 @@ var paused = true;
 var dayCounter = 0;
 let transactionHistory;
 
-
+/**
+ * The preload function is part of the Phaser game lifecycle and is used to load assets.
+ */
 function preload() {
 }
 
 var moneyText; // To update the money display dynamically
 var timeText; // To update the time display dynamically
 
+/**
+ * The create function is part of the Phaser game lifecycle and is used to set up the game scene.
+ */
 function create() {
     const tileSize = 40;
     const types = ['Plains', 'City', 'Sea'];
@@ -103,6 +129,9 @@ function create() {
 
 }
 
+/**
+ * The onTick function is called every second and represents the game logic that should happen every tick.
+ */
 function onTick() {
     // Logic that should happen every tick
     // For example, decrease money every tick:
@@ -114,16 +143,31 @@ function onTick() {
     }
 }
 
+/**
+ * The pauseGame function is used to pause the game.
+ */
 function pauseGame() {
     paused = true;
     gameTimer.paused = true;
 }
 
+/**
+ * The resumeGame function is used to resume the game.
+ */
 function resumeGame() {
     paused = false;
     gameTimer.paused = false;
 }
 
+/**
+ * The createColorButton function is used to create a button that the player can interact with to change the color of the selected tile.
+ * @param {Phaser.Scene} scene - The current game scene.
+ * @param {number} x - The x-coordinate of the button.
+ * @param {number} y - The y-coordinate of the button.
+ * @param {number} color - The color of the button.
+ * @param {string} label - The label of the button.
+ * @param {number} cost - The cost of the color.
+ */
 function createColorButton(scene, x, y, color, label, cost) {
     let button = scene.add.rectangle(x, y, 80, 30, color).setInteractive();
     let costText = ' - $' + cost;
@@ -138,14 +182,23 @@ function createColorButton(scene, x, y, color, label, cost) {
     });
 }
 
+/**
+ * The updateMoneyDisplay function is used to update the display of the player's money.
+ */
 function updateMoneyDisplay() {
     moneyText.setText('Money: $' + transactionHistory.getBalance());
 }
 
+/**
+ * The updateTimeDisplay function is used to update the display of the current day.
+ */
 function updateTimeDisplay() {
     timeText.setText('Day: ' + dayCounter);
 }
 
+/**
+ * The update function is part of the Phaser game lifecycle and is called every frame to update the game state.
+ */
 function update() {
     if (Phaser.Input.Keyboard.JustDown(cursors.left)) {
         updateSelection(-1, 0);
@@ -158,6 +211,11 @@ function update() {
     }
 }
 
+/**
+ * The updateSelection function is used to update the selected tile based on keyboard inputs.
+ * @param {number} x - The change in the x-coordinate of the selected tile.
+ * @param {number} y - The change in the y-coordinate of the selected tile.
+ */
 function updateSelection(x, y) {
     if (Tile.selectedTile) {
         let i = Tile.selectedTile.i;
