@@ -1,6 +1,6 @@
-import { Tile } from "../Tile.js";
+import {PowerConsumer} from "./PowerConsumer.js";
 
-export class House extends Tile {
+export class House extends PowerConsumer {
     static houseCount = 0;
     constructor(scene, i, j) {
         super(scene, i, j, 'house');

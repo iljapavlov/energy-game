@@ -7,10 +7,11 @@
 // Import necessary modules and classes
 import { Tile } from './Tile.js';
 import { TransactionHistory } from './TransactionHistory.js';
-import { House } from './tiletypes/House.js';
+import { House } from './tiletypes/powerConsumer/House.js';
 import { Plains } from './tiletypes/Plains.js';
 import { Sea } from './tiletypes/Sea.js';
-import { SolarPanel } from './tiletypes/SolarPanel.js';
+import { SolarPanel } from './tiletypes/powerProducers/renewable/SolarPanel.js';
+import { EleringDataFetcher } from './EleringDataFetcher.js';
 
 /**
  * Configuration object for the Phaser game.
@@ -55,24 +56,37 @@ var tiles = []; // 2D array of tiles
 var gameTimer;
 var paused = true;
 let transactionHistory;
+let eleringDataFetcher;
 
-const HOURLY_CONSUMPTION = [10, 15, 20, 50, 5, 10, 3, 4, 2, 5, 16, 70, 60, 40, 20, 17, 14, 15, 17, 2, 24, 25, 40];
-const HOURLY_PRODUCTION = [10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130];
+let HOURLY_CONSUMPTION = [];
+let HOURLY_PRODUCTION = [];
+
+async function initializeDataFetcher() {
+    eleringDataFetcher = new EleringDataFetcher();
+    await eleringDataFetcher.fetchData();
+
+    for (let hour = 0; hour < 24; hour++) {
+        HOURLY_CONSUMPTION[hour] = eleringDataFetcher.getConsumptionForHour(hour);
+        HOURLY_PRODUCTION[hour] = eleringDataFetcher.getProductionForHour(hour);
+    }
+}
+
 var hourCounter = 0;
+
 
 const getNumberOfTileColor = (tileColor) => {
     return tiles.flat().filter(tile => tile.color === tileColor).length;
 }
 
 const getCurrentConsumption = () => {
-    
+
     return HOURLY_CONSUMPTION[hourCounter % HOURLY_CONSUMPTION.length] * House.houseCount;
 }
 const getCurrentProduction = () => {
     return HOURLY_PRODUCTION[hourCounter % HOURLY_PRODUCTION.length] * getNumberOfTileColor('aqua');
 }
 const getCurrentElectricityPrice = (production, consumption) => {
-    const BASE_ELECTRICITTY_PRICE = 0.1; // TODO change this 
+    const BASE_ELECTRICITTY_PRICE = 0.1; // TODO change this
 
     let price_multiplier;
     if (consumption > production) {
@@ -111,7 +125,10 @@ var electricityText;
  */
 function create() {
     const types = ['Plains', 'House', 'Sea', 'SolarPanel'];
-
+    initializeDataFetcher().then(() => {
+        console.log("Prod: "+HOURLY_PRODUCTION);
+        console.log("Cons: "+HOURLY_CONSUMPTION);
+    });
     // Creating the top bar
     this.add.rectangle(0, 0, 800, 40, 0x333333).setOrigin(0);
 
