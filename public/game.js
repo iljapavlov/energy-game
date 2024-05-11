@@ -71,12 +71,6 @@ function create() {
     // Capture keyboard arrows
     cursors = this.input.keyboard.createCursorKeys();
 
-    // Create buttons for changing tile color
-    createColorButton(this, 800, 100, 0x0000FF, 'Blue'); // Blue button
-    createColorButton(this, 800, 160, 0xFF1493, 'Pink'); // Pink button
-    createColorButton(this, 800, 220, 0xFFFF00, 'Yellow'); // Yellow button
-    createColorButton(this, 800, 280, 0x00FF00, 'Green'); // Green button
-
     // money related things
     moneyText = this.add.text(10, 20, 'Money: $' + money, { fontSize: '20px', fill: '#fff' });
 
@@ -87,8 +81,6 @@ function create() {
     createColorButton(this, 800, 280, 0x00FF00, 'Green', costs.Green);
 
 }
-
-
 
 function createColorButton(scene, x, y, color, label, cost) {
     let button = scene.add.rectangle(x, y, 80, 30, color).setInteractive();
