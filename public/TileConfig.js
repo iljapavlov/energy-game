@@ -25,7 +25,6 @@ export const TILE_CONFIG = {
     },
     houseBattery: {
         bgColor: colorNameToHex('dark-green'),
-        image: 'houseBattery',
     },
     houseSolar: {
         bgColor: colorNameToHex('dark-green'),
@@ -36,6 +35,11 @@ export const TILE_CONFIG = {
     },
 
     // POWER PRODUCERS
+    biomass: {
+        bgColor: colorNameToHex('green'),
+        powerOutput: 120,
+        isRenewable: false
+    },
     coal: {
         bgColor: colorNameToHex('dark-grey'),
         powerOutput: 200,
@@ -46,17 +50,37 @@ export const TILE_CONFIG = {
         powerOutput: 300,
         isRenewable: false
     },
+    geothermal: {
+        bgColor: colorNameToHex('dark-grey'),
+        powerOutput: 300,
+        isRenewable: true
+    },
+    nuclear: {
+        bgColor: colorNameToHex('green'),
+        powerOutput: 1200,
+        isRenewable: true
+    },
     solarPanel: {
         bgColor: colorNameToHex('dark-green'),
-        image: 'solar-panel.png',
+        image: 'solar-panel',
         powerOutput: 10,
-        isRenewable: true
+        isRenewable: true,
+        rescale: 0.02
     },
     windMill: {
         bgColor: colorNameToHex('dark-green'),
-        image: 'windMill',
         powerOutput: 10,
         isRenewable: true
+    },
+    tidal: {
+        bgColor: colorNameToHex('blue'),
+        isRenewable: true,
+        powerOutput: 10
+    },
+    hydro: {
+        bgColor: colorNameToHex('blue'),
+        isRenewable: true,
+        powerOutput: 12
     },
 
     // POWER STORAGE
@@ -64,6 +88,11 @@ export const TILE_CONFIG = {
         bgColor: colorNameToHex('cyan'),
         storageCapacity: 200,
     },
+
+    // CONNECTOR
+    connector: {
+        bgColor: colorNameToHex('black')
+    }
 }
 
 function colorNameToHex(color) {
