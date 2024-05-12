@@ -29,11 +29,13 @@ export class Tile {
         this.i = i;
         this.j = j;
         this.name = tileName;
-        console.log(TILE_CONFIG[tileName], tileName)
 
         const bgColor = TILE_CONFIG[tileName].bgColor;
         const image = TILE_CONFIG[tileName].image;
-        // draw tile bg
+        const animation = TILE_CONFIG[tileName].animation;
+
+        // LAYERS
+        // BG LAYER
         this.bg = scene.add.rectangle(
             100 + j * Tile.TILE_SIZE,
             100 + i * Tile.TILE_SIZE,
@@ -42,12 +44,24 @@ export class Tile {
             bgColor
         ).setInteractive().setStrokeStyle(0);
 
-        if (!!image) {
+        // IMAGE LAYER
+        if (image) {
             this.tile = scene.add.image(
                 100 + j * Tile.TILE_SIZE,
                 100 + i * Tile.TILE_SIZE,
                 image
-            ).setInteractive()
+            ).setInteractive().setDepth(2);
+            const rescale =  TILE_CONFIG[tileName].rescale || 0.2;
+            this.tile.setScale(rescale).setDepth(1);
+        } else if (animation) {
+            // Use scene to access the animations manager
+            scene.anims.create({
+                key: animation,
+                frames: scene.anims.generateFrameNumbers(animation, { start: 0, end: 5 }),
+                frameRate: 5,
+                repeat: -1
+            });
+            this.tile = scene.add.sprite(100 + j * Tile.TILE_SIZE, 100 + i * Tile.TILE_SIZE, animation).play(animation);
             const rescale =  TILE_CONFIG[tileName].rescale || 0.2;
             this.tile.setScale(rescale).setDepth(1);
         }

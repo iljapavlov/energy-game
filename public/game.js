@@ -116,6 +116,14 @@ function preload() {
     this.load.image('solar-panel', './img/solar-panel.png');
     this.load.image('tower', './img/tower.png');
     this.load.image('water', './img/water.png');
+    this.load.image('battery-100', './img/battery-100.png');
+    this.load.image('power-plant-on', './img/power-plant-on.png');
+    this.load.image('grass', './img/grass.png');
+    // this.load.spritesheet('wire', './img/wire-3.png', {frameWidth:972,frameHeight:318, endFrame:5});
+    // this.load.image('wire-straight', './img/wires/wire-straight.png');
+    // this.load.image('wire-angle', './img/wires/wire-angle.png');
+    // this.load.image('wire-sumo-pants', './img/wires/wire-sumo-pants.png');
+    // this.load.image('wire-connection', './img/wires/wire-connection.png');
 }
 
 /**
@@ -123,7 +131,9 @@ function preload() {
  */
 function create() {
     const types = ["Connector", "House", "HouseBattery", "HouseSolar", "HouseSolarBattery", "Coal", "Gas", "Nuclear", "Biomass", "Geothermal", "Hydro", "SolarPanel", "Tidal", "Windmill", "ChemicalBattery", "GravityBattery", "Forest", "Mountain", "Plains", "Sea"];
-    var levelDesign = levelDesigns.level1
+    
+    var levelDesign = levelDesigns.level3
+    
     initializeDataFetcher().then(() => {
         console.log("Prod: " + HOURLY_PRODUCTION);
         console.log("Cons: " + HOURLY_CONSUMPTION);
@@ -214,6 +224,67 @@ function create() {
     //         }
     //     }
     // }
+
+    // Draw wiring
+
+    /**
+     * Draws wiring between connectors and their neighboring tiles if they are not "Sea", "Plains", or "Forest".
+     * @param {Phaser.Scene} scene - The current game scene.
+     * @param {number} i - The row index of the tile.
+     * @param {number} j - The column index of the tile.
+     * @param {Array<Array<string>>} map - The map grid representing tile types.
+     */
+    function drawWiring(scene, i, j, map) {
+        const directions = [
+            { di: -1, dj: 0 }, // Up
+            { di: 1, dj: 0 },  // Down
+            { di: 0, dj: -1 }, // Left
+            { di: 0, dj: 1 }   // Right
+        ];
+
+        const baseX = 75; // Base X-coordinate for the tiles
+        const baseY = 75; // Base Y-coordinate for the tiles
+        const tileSize = Tile.TILE_SIZE;
+        const wireWidth = 4; // Width of the wire
+
+        const centerX = baseX + j * tileSize + tileSize / 2;
+        const centerY = baseY + i * tileSize + tileSize / 2;
+
+        const tileName = map[i][j];
+
+        directions.forEach(({ di, dj }) => {
+            const ni = i + di;
+            const nj = j + dj;
+
+            if (ni >= 0 && ni < map.length && nj >= 0 && nj < map[0].length) { //boundaries
+                const neighbour = map[ni][nj];
+
+                if ((!['Sea', 'Plains', 'Forest'].includes(tileName)) && (!['Sea', 'Plains', 'Forest'].includes(neighbour))){
+                    const neighborCenterX = baseX + nj * tileSize + tileSize / 2;
+                    const neighborCenterY = baseY + ni * tileSize + tileSize / 2;
+
+                    // Calculate angle and distance for the wire
+                    const angle = Math.atan2(neighborCenterY - centerY, neighborCenterX - centerX);
+                    const distance = Phaser.Math.Distance.Between(centerX, centerY, neighborCenterX, neighborCenterY);
+
+                    // Create a rectangle (wire) rotated to connect centers
+                    const wire = scene.add.rectangle(centerX, centerY, distance, wireWidth, 0x314a26)
+                        .setOrigin(0, 0.5)
+                        .setAngle(Phaser.Math.RadToDeg(angle))
+                        .setDepth(0);
+                }
+            }
+        });
+    }
+
+
+    for (let i = 0; i < tiles.length; i++) {
+        for (let j = 0; j < tiles[i].length; j++) {
+            if (!([Sea, Plains, Forest].some(c => tiles[i][j] instanceof c))) {
+                drawWiring(this, i, j, levelDesign);
+            }
+        }
+    }
 
     // Initial selection
     tiles[0][0].select();
