@@ -5,7 +5,7 @@ export const TILE_CONFIG = {
     },
     sea: {
         bgColor: colorNameToHex('blue'),
-        image: 'water',
+        bgImage: 'water',
         rescale: 0.0325
     },
     forest: {
@@ -13,23 +13,32 @@ export const TILE_CONFIG = {
     }, 
     grass: {
         bgColor: colorNameToHex('green'),
-        image: 'grass'
+        bgImage: 'grass',
+        rescale: 0.0325
+    },
+    grassFlowers: {
+        bgColor: colorNameToHex('green'),
+        bgImage: 'grass-flowers',
+        rescale: 0.0325
     },
 
     // POWER CONSUMER TILES
     house: {
-        bgColor: colorNameToHex('dark-green'),
+        bgColor: colorNameToHex('green'),
         image: 'house'
     },
     houseBattery: {
-        bgColor: colorNameToHex('dark-green'),
+        bgColor: colorNameToHex('green'),
+        image: 'house-battery'
     },
     houseSolar: {
-        bgColor: colorNameToHex('dark-green'),
+        bgColor: colorNameToHex('green'),
         image: 'house-solar'
     },
     houseSolarBattery: {
-        bgColor: colorNameToHex('dark-green'),
+        bgColor: colorNameToHex('green'),
+        image: 'house-solar-battery-empty',
+        rescale: 0.033
     },
 
     // POWER PRODUCERS
@@ -61,14 +70,14 @@ export const TILE_CONFIG = {
         isRenewable: true
     },
     solarPanel: {
-        bgColor: colorNameToHex('dark-green'),
+        bgColor: colorNameToHex('green'),
         image: 'solar-panel',
         powerOutput: 10,
         isRenewable: true,
         rescale: 0.02
     },
     windMill: {
-        bgColor: colorNameToHex('dark-green'),
+        bgColor: colorNameToHex('green'),
         powerOutput: 10,
         isRenewable: true
     },
@@ -85,18 +94,15 @@ export const TILE_CONFIG = {
 
     // POWER STORAGE
     chemicalBattery: {
-        bgColor: colorNameToHex('dark-green'),
+        bgColor: colorNameToHex('green'),
         storageCapacity: 200,
         image: 'battery-two-bars',
-        rescale: 0.2
+        rescale: 0.045
     },
 
     // CONNECTOR
     connector: {
-        bgColor: colorNameToHex('dark-green'),
-        // image: 'wire-straight',
-        // animation: 'wire',
-        // rescale: 1.4
+        bgColor: colorNameToHex('green'),
     }
 }
 
@@ -105,7 +111,8 @@ function colorNameToHex(color) {
         "black": "0x000000",
         "white": "0xFFFFFF",
         "red": "0xFF0000",
-        "green": "0x008000",
+        // "green": "0x008000",
+        "green": "0x8cbd62",
         "blue": "0x0000FF",
         "yellow": "0xFFFF00",
         "pink": "0xFFC0CB",

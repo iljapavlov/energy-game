@@ -32,17 +32,28 @@ export class Tile {
 
         const bgColor = TILE_CONFIG[tileName].bgColor;
         const image = TILE_CONFIG[tileName].image;
+        const bgImage = TILE_CONFIG[tileName].bgImage;
         const animation = TILE_CONFIG[tileName].animation;
 
         // LAYERS
         // BG LAYER
-        this.bg = scene.add.rectangle(
-            100 + j * Tile.TILE_SIZE,
-            100 + i * Tile.TILE_SIZE,
-            Tile.TILE_SIZE,
-            Tile.TILE_SIZE,
-            bgColor
-        ).setInteractive().setStrokeStyle(0);
+        if (bgImage) {
+            this.tile = scene.add.image(
+                100 + j * Tile.TILE_SIZE,
+                100 + i * Tile.TILE_SIZE,
+                bgImage
+            ).setInteractive().setDepth(0);
+            const rescale =  TILE_CONFIG[tileName].rescale || 0.2;
+            this.tile.setScale(rescale).setDepth(1);
+        } else if (bgColor) {
+            this.bg = scene.add.rectangle(
+                100 + j * Tile.TILE_SIZE,
+                100 + i * Tile.TILE_SIZE,
+                Tile.TILE_SIZE,
+                Tile.TILE_SIZE,
+                bgColor
+            ).setInteractive().setStrokeStyle(0);
+        }
 
         // IMAGE LAYER
         if (image) {
@@ -52,7 +63,7 @@ export class Tile {
                 image
             ).setInteractive().setDepth(2);
             const rescale =  TILE_CONFIG[tileName].rescale || 0.2;
-            this.tile.setScale(rescale).setDepth(1);
+            this.tile.setScale(rescale).setDepth(2);
         } else if (animation) {
             // Use scene to access the animations manager
             scene.anims.create({
@@ -63,7 +74,7 @@ export class Tile {
             });
             this.tile = scene.add.sprite(100 + j * Tile.TILE_SIZE, 100 + i * Tile.TILE_SIZE, animation).play(animation);
             const rescale =  TILE_CONFIG[tileName].rescale || 0.2;
-            this.tile.setScale(rescale).setDepth(1);
+            this.tile.setScale(rescale).setDepth(2);
         }
     }
 
@@ -93,7 +104,7 @@ export class Tile {
             Tile.selectedTile.bg.setStrokeStyle(0);
         }
         // Set green bg on the rectangle
-        this.bg.setStrokeStyle(2, 0x00FF00); // Green bg for selected tile
+        //this.bg.setStrokeStyle(2, 0x00FF00); // Green bg for selected tile
         Tile.selectedTile = this;
     }
 }
