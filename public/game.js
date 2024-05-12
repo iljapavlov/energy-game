@@ -5,33 +5,33 @@
  */
 
 // Import necessary modules and classes
-import {Tile} from './Tile.js';
-import {TransactionHistory} from './TransactionHistory.js';
-import {House} from './tiletypes/powerConsumer/House.js';
-import {Plains} from './tiletypes/terrain/Plains.js';
-import {Sea} from './tiletypes/terrain/Sea.js';
-import {SolarPanel} from './tiletypes/powerProducers/renewable/SolarPanel.js';
-import {EleringDataFetcher} from './EleringDataFetcher.js';
-import {PowerConsumer} from "./tiletypes/powerConsumer/PowerConsumer.js";
-import {Connector} from "./tiletypes/powerConnector/Connector.js";
-import {HouseBattery} from "./tiletypes/powerStorage/HouseBattery.js";
-import {HouseSolar} from "./tiletypes/powerConsumer/HouseSolar.js";
-import {HouseSolarBattery} from "./tiletypes/powerStorage/HouseSolarBattery.js";
-import {Coal} from "./tiletypes/powerProducers/fossil/Coal.js";
-import {Gas} from "./tiletypes/powerProducers/fossil/Gas.js";
-import {Geothermal} from "./tiletypes/powerProducers/renewable/Geothermal.js";
-import {Hydro} from "./tiletypes/powerProducers/renewable/Hydro.js";
-import {Biomass} from "./tiletypes/powerProducers/renewable/Biomass.js";
-import {Nuclear} from "./tiletypes/powerProducers/fossil/Nuclear.js";
-import {Tidal} from "./tiletypes/powerProducers/renewable/Tidal.js";
-import {Windmill} from "./tiletypes/powerProducers/renewable/Windmill.js";
-import {ChemicalBattery} from "./tiletypes/powerStorage/ChemicalBattery.js";
-import {Forest} from "./tiletypes/terrain/Forest.js";
-import {levelDesigns} from "./levelDesigns.js";
-import {GravityBattery} from "./tiletypes/powerStorage/GravityBattery.js";
-import {PowerStorage} from "./tiletypes/powerStorage/PowerStorage.js";
-import {PowerProducer} from "./tiletypes/powerProducers/PowerProducer.js";
-import {WeatherManager} from './weather/WeatherManager.js';
+import { EleringDataFetcher } from './EleringDataFetcher.js';
+import { Tile } from './Tile.js';
+import { TransactionHistory } from './TransactionHistory.js';
+import { levelDesigns } from "./levelDesigns.js";
+import { Connector } from "./tiletypes/powerConnector/Connector.js";
+import { House } from './tiletypes/powerConsumer/House.js';
+import { HouseSolar } from "./tiletypes/powerConsumer/HouseSolar.js";
+import { PowerConsumer } from "./tiletypes/powerConsumer/PowerConsumer.js";
+import { PowerProducer } from "./tiletypes/powerProducers/PowerProducer.js";
+import { Coal } from "./tiletypes/powerProducers/fossil/Coal.js";
+import { Gas } from "./tiletypes/powerProducers/fossil/Gas.js";
+import { Nuclear } from "./tiletypes/powerProducers/fossil/Nuclear.js";
+import { Biomass } from "./tiletypes/powerProducers/renewable/Biomass.js";
+import { Geothermal } from "./tiletypes/powerProducers/renewable/Geothermal.js";
+import { Hydro } from "./tiletypes/powerProducers/renewable/Hydro.js";
+import { SolarPanel } from './tiletypes/powerProducers/renewable/SolarPanel.js';
+import { Tidal } from "./tiletypes/powerProducers/renewable/Tidal.js";
+import { Windmill } from "./tiletypes/powerProducers/renewable/Windmill.js";
+import { ChemicalBattery } from "./tiletypes/powerStorage/ChemicalBattery.js";
+import { GravityBattery } from "./tiletypes/powerStorage/GravityBattery.js";
+import { HouseBattery } from "./tiletypes/powerStorage/HouseBattery.js";
+import { HouseSolarBattery } from "./tiletypes/powerStorage/HouseSolarBattery.js";
+import { PowerStorage } from "./tiletypes/powerStorage/PowerStorage.js";
+import { Forest } from "./tiletypes/terrain/Forest.js";
+import { Plains } from './tiletypes/terrain/Plains.js';
+import { Sea } from './tiletypes/terrain/Sea.js';
+import { WeatherManager } from './weather/WeatherManager.js';
 
 /**
  * Configuration object for the Phaser game.
@@ -256,6 +256,14 @@ function create() {
     level2Button.on('pointerdown', () => loadLevel('level2', this));
     level3Button.on('pointerdown', () => loadLevel('level3', this));
 
+    this.input.on('pointerdown', (pointer) => {
+        const x = Math.floor((pointer.x - 75) / Tile.TILE_SIZE);
+        const y = Math.floor((pointer.y - 75) / Tile.TILE_SIZE);
+
+        if (x >= 0 && x <= 10 && y >= 0 && y <= 10) {
+            tiles[y][x].select();
+        }
+    });
 }
 
 function loadLevel(levelKey, scene) {
