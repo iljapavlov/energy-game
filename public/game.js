@@ -164,6 +164,8 @@ function preload() {
     this.load.image('house-solar-battery-full', './img/house-solar-batteries/HOUSE_AND_BATTERY_100_.png')
 
     // Chemical Battery Images
+    this.load.image('battery-white', './img/battery-statuses/battery_white.png');
+
     this.load.image('battery-empty', './img/battery-statuses/battery_0.png');
     this.load.image('battery-one-bar', './img/battery-statuses/battery_25.png');
     this.load.image('battery-two-bars', './img/battery-statuses/battery_50.png');
@@ -278,6 +280,11 @@ function create() {
     this.add.text(580, 550, 'Level:', { fontFamily: 'Arial', fontSize: '32px', fill: '#fff' });
 
     // Add the buttons
+    this.add.image(
+        680,460,
+        'battery-white'
+    ).setScale(0.4).setDepth(0)
+
     const level1Button = this.add.text(710, 550, '1', { fontFamily: 'Arial', fontSize: '32px', fill: '#fff' }).setInteractive();
     const level2Button = this.add.text(760, 550, '2', { fontFamily: 'Arial', fontSize: '32px', fill: '#fff' }).setInteractive();
     const level3Button = this.add.text(810, 550, '3', { fontFamily: 'Arial', fontSize: '32px', fill: '#fff' }).setInteractive();
