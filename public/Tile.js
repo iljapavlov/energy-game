@@ -81,7 +81,14 @@ export class Tile {
         }
     }
 
-    setImage(scene, imageKey) {
+    setImage(scene, imageKey, name) {
+        const bgColor = TILE_CONFIG[name].bgColor;
+        this.bg.setFillStyle(bgColor);
+
+        if (!!name) {
+            this.name = name;
+        }
+
         if (this.tile) {
             this.tile.destroy(); // Destroy the current image
             // this.tile.add.image(null);
@@ -92,8 +99,9 @@ export class Tile {
             100 + this.i * Tile.TILE_SIZE,
             imageKey
         ).setInteractive();
-        const rescale = TILE_CONFIG[this.name] ? TILE_CONFIG[this.name].rescale || 0.2 : 0.2;
-        this.tile.setScale(this.rescale).setDepth(1);
+        console.log(this.name);
+        const rescale = TILE_CONFIG[this.name].rescale || 0.2;
+        this.tile.setScale(rescale).setDepth(1);
     }
 
     /**

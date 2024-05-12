@@ -5,18 +5,18 @@ export class InfoPanel {
     this.scene = scene;
 
     this.pos = {
-      x: 550,
-      y: 230
+      x: 575,
+      y: 190 + 50
     };
 
     this.titles = scene.add.text(this.pos.x, this.pos.y, "Info Panel", { fontFamily: 'Arial', fontSize: 26, color: '#ffffff' });
-    this.text = scene.add.text(this.pos.x, this.pos.y + 30, "", { fontFamily: 'Arial', fontSize: 18, color: '#ffffff' });
+    this.text = scene.add.text(this.pos.x, this.pos.y + 40, "", { fontFamily: 'Arial', fontSize: 18, color: '#ffffff' });
     
-    this.tile = new Tile(this.scene, 5, 9, tileData.name, tileData.text);
+    this.tile = new Tile(this.scene, 2, 11, tileData.name, tileData.text);
   }
 
   setSelectedTileText(tileData) {
-    this.tile.setImage(this.scene, tileData.image);
+    this.tile.setImage(this.scene, tileData.image, tileData.name);
 
     let finalText = '';
     let titleText = '';
