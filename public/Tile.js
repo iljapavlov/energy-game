@@ -51,9 +51,6 @@ export class Tile {
             const rescale =  TILE_CONFIG[tileName].rescale || 0.2;
             this.tile.setScale(rescale).setDepth(1);
         }
-
-        // Common pointerdown event for both rectangle and image cases
-        this.bg.on('pointerdown', () => this.select());
     }
 
     setImage(scene, imageKey) {
