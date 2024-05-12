@@ -8,6 +8,7 @@
 import { EleringDataFetcher } from './EleringDataFetcher.js';
 import { Tile } from './Tile.js';
 import { TransactionHistory } from './TransactionHistory.js';
+import { InfoPanel } from './info/InfoPanel.js';
 import { levelDesigns } from "./levelDesigns.js";
 import { Connector } from "./tiletypes/powerConnector/Connector.js";
 import { House } from './tiletypes/powerConsumer/House.js';
@@ -69,6 +70,7 @@ let HOURLY_PRODUCTION = [];
 
 var hourCounter = 0;
 let weatherManager = null;
+let infoPanel = null;
 
 var moneyText; // To update the money display dynamically
 var timeText; // To update the time display dynamically
@@ -92,7 +94,7 @@ const getNumberOfTileColor = (tileColor) => {
 }
 
 const getCurrentElectricityPrice = (production, consumption) => {
-    const BASE_ELECTRICITY_PRICE = 1; // Base price per MWh in dollars
+    const BASE_ELECTRICITY_PRICE = 0.1; // Base price per MWh in dollars
 
     // Convert kWh to MWh for both production and consumption
     const productionMWh = production / 1000;
@@ -180,7 +182,6 @@ function create() {
     transactionHistory = new TransactionHistory();
     transactionHistory.addTransaction(money, 'income', 'Initial money')
 
-
     // Create a looped timer event that triggers every second
     gameTimer = this.time.addEvent({delay: 1000, callback: onTick, callbackScope: this, loop: true});
     // Add keyboard inputs for pausing and resuming the game
@@ -204,9 +205,9 @@ function create() {
     let buttonContainer = this.add.container(this.game.config.width - 100, this.game.config.height - 100);
 
     // Step 2: Create a few buttons
-    let setToCharge = this.add.rectangle(0, 0, 80, 30, colorCharge).setInteractive();
-    let setToDischarge = this.add.rectangle(0, -40, 80, 30, colorDischarge).setInteractive();
-    let setToIdle = this.add.rectangle(0, -80, 80, 30, colorIdle).setInteractive();
+    let setToCharge = this.add.rectangle(0, 0, 100, 30, colorCharge).setInteractive();
+    let setToDischarge = this.add.rectangle(0, -40, 100, 30, colorDischarge).setInteractive();
+    let setToIdle = this.add.rectangle(0, -80, 100, 30, colorIdle).setInteractive();
 
     // Add text to the buttons
     let textCharge = this.add.text(0, 0, 'Charge', {color: '#000000', fontSize: '16px'}).setOrigin(0.5);
@@ -257,13 +258,19 @@ function create() {
     level3Button.on('pointerdown', () => loadLevel('level3', this, true));
 
     this.input.on('pointerdown', (pointer) => {
-        const x = Math.floor((pointer.x - 75) / Tile.TILE_SIZE);
+        const x = Math.floor((pointer.x - 25) / Tile.TILE_SIZE);
         const y = Math.floor((pointer.y - 75) / Tile.TILE_SIZE);
 
         if (x >= 0 && x <= 10 && y >= 0 && y <= 10) {
             tiles[y][x].select();
+    
+            infoPanel.setSelectedTileText(tiles[y][x]);
         }
+
     });
+
+    infoPanel = new InfoPanel(this, tiles[0][0]);
+    infoPanel.setSelectedTileText(tiles[0][0]);
 }
 
 function loadLevel(levelKey, scene, isNotInit) {
@@ -287,12 +294,12 @@ function loadLevel(levelKey, scene, isNotInit) {
         for (let j = 0; j < 10; j++) {
             let type = levelDesign[i][j];
             let tile;
-            switch (type) {
+            switch (type.split(":")[0]) {
                 case 'Connector':
                     tile = new Connector(scene, i, j);
                     break;
                 case 'House':
-                    tile = new House(scene, i, j);
+                    tile = new House(scene, i, j, type.split(":")[1]);
                     break;
                 case 'HouseBattery':
                     tile = new HouseBattery(scene, i, j);
@@ -383,7 +390,7 @@ function loadLevel(levelKey, scene, isNotInit) {
             { di: 0, dj: 1 }   // Right
         ];
 
-        const baseX = 75; // Base X-coordinate for the tiles
+        const baseX = 25; // Base X-coordinate for the tiles
         const baseY = 75; // Base Y-coordinate for the tiles
         const tileSize = Tile.TILE_SIZE;
         const wireWidth = 4; // Width of the wire
@@ -482,6 +489,7 @@ function onTick() {
         updateGridPower();
         updatePowerStorage();
 
+        currentElectricityPrice = getCurrentElectricityPrice(currentProduction, currentConsumption);
         electricityText.setText('Electricity price: ' + currentElectricityPrice + ' € / kWh');
         gridPowerText.setText('Grid Power ' + gridPower + ' kW');
 

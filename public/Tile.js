@@ -25,19 +25,21 @@ export class Tile {
      * @param {number} j - The column index of the tile.
      * @param {string} tileName - Tile name
      */
-    constructor(scene, i, j, tileName) {
+    constructor(scene, i, j, tileName, text) {
+        this.text = text;
+
         this.i = i;
         this.j = j;
         this.name = tileName;
 
         const bgColor = TILE_CONFIG[tileName].bgColor;
-        const image = TILE_CONFIG[tileName].image;
+        this.image = TILE_CONFIG[tileName].image;
         const animation = TILE_CONFIG[tileName].animation;
 
         // LAYERS
         // BG LAYER
         this.bg = scene.add.rectangle(
-            100 + j * Tile.TILE_SIZE,
+            50 + j * Tile.TILE_SIZE,
             100 + i * Tile.TILE_SIZE,
             Tile.TILE_SIZE,
             Tile.TILE_SIZE,
@@ -45,11 +47,11 @@ export class Tile {
         ).setInteractive().setStrokeStyle(0);
 
         // IMAGE LAYER
-        if (image) {
+        if (this.image) {
             this.tile = scene.add.image(
-                100 + j * Tile.TILE_SIZE,
+                50 + j * Tile.TILE_SIZE,
                 100 + i * Tile.TILE_SIZE,
-                image
+                this.image
             ).setInteractive().setDepth(2);
             const rescale =  TILE_CONFIG[tileName].rescale || 0.2;
             this.tile.setScale(rescale).setDepth(1);
@@ -62,7 +64,7 @@ export class Tile {
                 repeat: -1
             });
             this.tile = scene.add.sprite(100 + j * Tile.TILE_SIZE, 100 + i * Tile.TILE_SIZE, animation).play(animation);
-            const rescale =  TILE_CONFIG[tileName].rescale || 0.2;
+            this.rescale =  TILE_CONFIG[tileName].rescale || 0.2;
             this.tile.setScale(rescale).setDepth(1);
         }
     }
@@ -79,7 +81,7 @@ export class Tile {
             imageKey
         ).setInteractive();
         const rescale = TILE_CONFIG[this.name] ? TILE_CONFIG[this.name].rescale || 0.2 : 0.2;
-        this.tile.setScale(rescale).setDepth(1);
+        this.tile.setScale(this.rescale).setDepth(1);
     }
 
     /**
