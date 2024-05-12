@@ -76,6 +76,7 @@ let infoPanel = null;
 
 var moneyText; // To update the money display dynamically
 var timeText; // To update the time display dynamically
+var dayText; 
 var electricityText;
 var gridPowerText;
 var gridPower = 0;
@@ -216,6 +217,7 @@ function create() {
     this.input.keyboard.on('keydown-P', pauseGame, this);
     this.input.keyboard.on('keydown-R', resumeGame, this);
     timeText = this.add.text(300, 20, 'Hour: ' + hourCounter%24+':00', {fontSize: '18px', fill: '#fff'});
+    dayText = this.add.text(420, 20, 'Day: ' + Math.floor(hourCounter/24), {fontSize: '18px', fill: '#fff'});
     currentElectricityPrice = getCurrentElectricityPrice(currentProduction, currentConsumption);
 
     // consumptionText = this.add.text(500, 20, 'Consumption: ' + currentConsumption, { fontSize: '18px', fill: '#fff' });
@@ -583,11 +585,16 @@ function onTick() {
         });
 
         // Set random weather
-        if (hourCounter % 6 === 0) {
-            if (!!weatherManager) {
-                weatherManager.setRandomWeather();
-            }
+        if (hourCounter%24 > 8 && hourCounter%24 < 21) {
+            weatherManager.setWeather('sun')
+        } else {
+            weatherManager.setWeather('moon')
         }
+        // if (hourCounter % 6 === 0) {
+        //     if (!!weatherManager) {
+        //         weatherManager.setRandomWeather();
+        //     }
+        // }
     }
 }
 
@@ -619,6 +626,7 @@ function updateMoneyDisplay() {
  */
 function updateTimeDisplay() {
     timeText.setText('Hour: ' + hourCounter%24+':00');
+    dayText.setText('Day: '+ Math.floor(hourCounter/24));
 }
 
 // Simulate day and night cycle by varying the alpha of the overlay

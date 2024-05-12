@@ -5,10 +5,14 @@ export class WeatherManager {
     return Object.keys(WEATHER_CONFIG)[Math.floor(Math.random() * Object.keys(WEATHER_CONFIG).length)];
   }
 
+  static setWeather(weatherType) {
+    return Object.keys(WEATHER_CONFIG)[weatherType];
+  }
+
   constructor(scene) {
     this.weather = null;
 
-    this.image = scene.add.image(800, 130).setInteractive();
+    this.image = scene.add.image(840,110).setInteractive();
 
     this.setRandomWeather();
   }
