@@ -39,6 +39,7 @@ export const TILE_CONFIG = {
         bgColor: colorNameToHex('green'),
         image: 'house-battery',
         title: 'House with battery',
+        storageCapacity: 200
     },
     houseSolar: {
         bgColor: colorNameToHex('dark-green'),
@@ -51,6 +52,7 @@ export const TILE_CONFIG = {
         image: 'house-solar-battery-empty',
         rescale: 0.033,
         title: 'House with solar panels \nand battery',
+        storageCapacity: 200
     },
 
     // POWER PRODUCERS
