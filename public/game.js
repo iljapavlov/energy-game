@@ -307,6 +307,7 @@ function loadLevel(levelKey, scene, isNotInit) {
     gridPower=0;
     currentElectricityPrice=0;
     hourCounter=0;
+
     tiles = [];
     money=10000;
 
