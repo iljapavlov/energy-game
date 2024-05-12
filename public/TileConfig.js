@@ -87,7 +87,8 @@ export const TILE_CONFIG = {
     chemicalBattery: {
         bgColor: colorNameToHex('dark-green'),
         storageCapacity: 200,
-        image: 'battery-100'
+        image: 'battery-two-bars',
+        rescale: 0.2
     },
 
     // CONNECTOR
