@@ -160,7 +160,6 @@ function preload() {
  * The create function is part of the Phaser game lifecycle and is used to set up the game scene.
  */
 function create() {
-    const types = ["Connector", "House", "HouseBattery", "HouseSolar", "HouseSolarBattery", "Coal", "Gas", "Nuclear", "Biomass", "Geothermal", "Hydro", "SolarPanel", "Tidal", "Windmill", "ChemicalBattery", "GravityBattery", "Forest", "Mountain", "Plains", "Sea"];
 
     initializeDataFetcher().then(() => {
         console.log("Prod: " + HOURLY_PRODUCTION);
@@ -203,7 +202,6 @@ function create() {
 
     // Step 1: Create a new container
     let buttonContainer = this.add.container(this.game.config.width - 100, this.game.config.height - 100);
-
 
     // Step 2: Create a few buttons
     let setToCharge = this.add.rectangle(0, 0, 80, 30, colorCharge).setInteractive();
@@ -248,12 +246,12 @@ function create() {
     // Add the label
     this.add.text(600, 550, 'Level:', { fontSize: '32px', fill: '#fff' });
 
-// Add the buttons
+    // Add the buttons
     const level1Button = this.add.text(710, 550, '1', { fontSize: '32px', fill: '#fff' }).setInteractive();
     const level2Button = this.add.text(760, 550, '2', { fontSize: '32px', fill: '#fff' }).setInteractive();
     const level3Button = this.add.text(810, 550, '3', { fontSize: '32px', fill: '#fff' }).setInteractive();
 
-// Add click events to the buttons
+    // Add click events to the buttons
     level1Button.on('pointerdown', () => loadLevel('level1', this));
     level2Button.on('pointerdown', () => loadLevel('level2', this));
     level3Button.on('pointerdown', () => loadLevel('level3', this));
@@ -460,29 +458,6 @@ function pauseGame() {
 function resumeGame() {
     paused = false;
     gameTimer.paused = false;
-}
-
-/**
- * The createColorButton function is used to create a button that the player can interact with to change the color of the selected tile.
- * @param {Phaser.Scene} scene - The current game scene.
- * @param {number} x - The x-coordinate of the button.
- * @param {number} y - The y-coordinate of the button.
- * @param {number} color - The color of the button.
- * @param {string} label - The label of the button.
- * @param {number} cost - The cost of the color.
- */
-function createColorButton(scene, x, y, color, label, cost) {
-    let button = scene.add.rectangle(x, y, 80, 30, color).setInteractive();
-    let costText = ' - $' + cost;
-    scene.add.text(x + 45, y - 8, label + costText, {color: '#ffffff', fontSize: '16px'}).setOrigin(0.5);
-
-    button.on('pointerdown', function () {
-        if (Tile.selectedTile && transactionHistory.getBalance() >= cost) {
-            Tile.selectedTile.tile.setFillStyle(color, 1);
-            transactionHistory.addTransaction(cost, 'expense', `Bought ${label} color`);
-            updateMoneyDisplay();
-        }
-    });
 }
 
 /**
