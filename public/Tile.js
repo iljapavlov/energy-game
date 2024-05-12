@@ -82,8 +82,10 @@ export class Tile {
     }
 
     setImage(scene, imageKey, name) {
-        const bgColor = TILE_CONFIG[name].bgColor;
-        this.bg.setFillStyle(bgColor);
+        if (!!name) {
+            const bgColor = TILE_CONFIG[name].bgColor;
+            this.bg.setFillStyle(bgColor);
+        }
 
         if (!!name) {
             this.name = name;
