@@ -49,6 +49,8 @@ var config = {
 var money = 10000;
 
 
+var currentLevel = 'level1';
+
 /**
  * The Phaser game instance.
  */
@@ -159,7 +161,7 @@ function preload() {
  */
 function create() {
     const types = ["Connector", "House", "HouseBattery", "HouseSolar", "HouseSolarBattery", "Coal", "Gas", "Nuclear", "Biomass", "Geothermal", "Hydro", "SolarPanel", "Tidal", "Windmill", "ChemicalBattery", "GravityBattery", "Forest", "Mountain", "Plains", "Sea"];
-    var levelDesign = levelDesigns.level1
+
     initializeDataFetcher().then(() => {
         console.log("Prod: " + HOURLY_PRODUCTION);
         console.log("Cons: " + HOURLY_CONSUMPTION);
@@ -168,83 +170,7 @@ function create() {
     this.add.rectangle(0, 0, 800, 40, 0x333333).setOrigin(0);
 
     // Create tiles
-    for (let i = 0; i < 10; i++) {
-        tiles[i] = [];
-        for (let j = 0; j < 10; j++) {
-            let type = levelDesign[i][j];
-            let tile;
-            switch (type) {
-                case 'Connector':
-                    tile = new Connector(this, i, j);
-                    break;
-                case 'House':
-                    tile = new House(this, i, j);
-                    break;
-                case 'HouseBattery':
-                    tile = new HouseBattery(this, i, j);
-                    tile.setFillStyle(colorIdle, 1)
-                    break;
-                case 'HouseSolar':
-                    tile = new HouseSolar(this, i, j);
-                    break;
-                case 'HouseSolarBattery':
-                    tile = new HouseSolarBattery(this, i, j);
-                    tile.setFillStyle(colorIdle, 1)
-                    break;
-                case 'Coal':
-                    tile = new Coal(this, i, j);
-                    break;
-                case 'Gas':
-                    tile = new Gas(this, i, j);
-                    break;
-                case 'Nuclear':
-                    tile = new Nuclear(this, i, j);
-                    break;
-                case 'Biomass':
-                    tile = new Biomass(this, i, j);
-                    break;
-                case 'Geothermal':
-                    tile = new Geothermal(this, i, j);
-                    break;
-                case 'Hydro':
-                    tile = new Hydro(this, i, j);
-                    break;
-                case 'SolarPanel':
-                    tile = new SolarPanel(this, i, j);
-                    break;
-                case 'Tidal':
-                    tile = new Tidal(this, i, j);
-                    break;
-                case 'Windmill':
-                    tile = new Windmill(this, i, j);
-                    break;
-                case 'ChemicalBattery':
-                    tile = new ChemicalBattery(this, i, j);
-                    tile.bg.setFillStyle(colorIdle, 1); // TODO change once ChemicalBattery has a image and not a color.
-                    break;
-                case 'GravityBattery':
-                    tile = new GravityBattery(this, i, j);
-                    tile.setFillStyle(colorIdle, 1)
-                    break;
-                case 'Forest':
-                    tile = new Forest(this, i, j);
-                    break;
-                case 'Plains':
-                    tile = new Plains(this, i, j);
-                    break;
-                case 'Sea':
-                    tile = new Sea(this, i, j);
-                    break;
-                default:
-                    tile = new Tile(this, i, j, "red");
-                    break;
-            }
-            tiles[i][j] = tile;
-        }
-    }
-
-    // Initial selection
-    tiles[0][0].select();
+    loadLevel('level1', this)
 
     // Capture keyboard arrows
     cursors = this.input.keyboard.createCursorKeys();
@@ -316,6 +242,109 @@ function create() {
 
     // ALL THE WEATHER MANAGER STUFF
     weatherManager = new WeatherManager(this);
+
+    // Level switching
+
+    // Add the label
+    this.add.text(600, 550, 'Level:', { fontSize: '32px', fill: '#fff' });
+
+// Add the buttons
+    const level1Button = this.add.text(710, 550, '1', { fontSize: '32px', fill: '#fff' }).setInteractive();
+    const level2Button = this.add.text(760, 550, '2', { fontSize: '32px', fill: '#fff' }).setInteractive();
+    const level3Button = this.add.text(810, 550, '3', { fontSize: '32px', fill: '#fff' }).setInteractive();
+
+// Add click events to the buttons
+    level1Button.on('pointerdown', () => loadLevel('level1', this));
+    level2Button.on('pointerdown', () => loadLevel('level2', this));
+    level3Button.on('pointerdown', () => loadLevel('level3', this));
+
+}
+
+function loadLevel(levelKey, scene) {
+    // Clear the current level
+    // ...
+
+    // Load the new level
+    const levelDesign = levelDesigns[levelKey];
+    for (let i = 0; i < 10; i++) {
+        tiles[i] = [];
+        for (let j = 0; j < 10; j++) {
+            let type = levelDesign[i][j];
+            let tile;
+            switch (type) {
+                case 'Connector':
+                    tile = new Connector(scene, i, j);
+                    break;
+                case 'House':
+                    tile = new House(scene, i, j);
+                    break;
+                case 'HouseBattery':
+                    tile = new HouseBattery(scene, i, j);
+                    tile.bg.setFillStyle(colorIdle, 1)
+                    break;
+                case 'HouseSolar':
+                    tile = new HouseSolar(scene, i, j);
+                    break;
+                case 'HouseSolarBattery':
+                    tile = new HouseSolarBattery(scene, i, j);
+                    tile.bg.setFillStyle(colorIdle, 1)
+                    break;
+                case 'Coal':
+                    tile = new Coal(scene, i, j);
+                    break;
+                case 'Gas':
+                    tile = new Gas(scene, i, j);
+                    break;
+                case 'Nuclear':
+                    tile = new Nuclear(scene, i, j);
+                    break;
+                case 'Biomass':
+                    tile = new Biomass(scene, i, j);
+                    break;
+                case 'Geothermal':
+                    tile = new Geothermal(scene, i, j);
+                    break;
+                case 'Hydro':
+                    tile = new Hydro(scene, i, j);
+                    break;
+                case 'SolarPanel':
+                    tile = new SolarPanel(scene, i, j);
+                    break;
+                case 'Tidal':
+                    tile = new Tidal(scene, i, j);
+                    break;
+                case 'Windmill':
+                    tile = new Windmill(scene, i, j);
+                    break;
+                case 'ChemicalBattery':
+                    tile = new ChemicalBattery(scene, i, j);
+                    tile.bg.setFillStyle(colorIdle, 1); // TODO change once ChemicalBattery has a image and not a color.
+                    break;
+                case 'GravityBattery':
+                    tile = new GravityBattery(scene, i, j);
+                    tile.setFillStyle(colorIdle, 1)
+                    break;
+                case 'Forest':
+                    tile = new Forest(scene, i, j);
+                    break;
+                case 'Plains':
+                    tile = new Plains(scene, i, j);
+                    break;
+                case 'Sea':
+                    tile = new Sea(scene, i, j);
+                    break;
+                default:
+                    tile = new Tile(scene, i, j, "red");
+                    break;
+            }
+            tiles[i][j] = tile;
+        }
+    }
+
+    // Initial selection
+    tiles[0][0].select();
+
+    currentLevel = levelKey;
 }
 
 function updateGridPower() {
