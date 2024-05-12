@@ -7,7 +7,6 @@
 // Import necessary modules and classes
 import { EleringDataFetcher } from './EleringDataFetcher.js';
 import { Tile } from './Tile.js';
-// import { TransactionHistory } from './TransactionHistory.js';
 import { InfoPanel } from './info/InfoPanel.js';
 import { levelDesigns } from "./levelDesigns.js";
 import { Connector } from "./tiletypes/powerConnector/Connector.js";
@@ -148,6 +147,7 @@ function preload() {
     this.load.image('grass', './img/grass.png');
     this.load.image('grass-flowers', './img/grass-flowers.png');
     this.load.image('power-plant-on', './img/power-plant-on.png');
+    this.load.image('forest', './img/forest.png');
 
     // Weather images
     this.load.image('sun', './img/weather/sun.png');
@@ -527,7 +527,7 @@ function onTick() {
         updatePowerStorage();
 
         currentElectricityPrice = getCurrentElectricityPrice(currentProduction, currentConsumption);
-        electricityText.setText('Electricity price: ' + currentElectricityPrice + ' € / kWh');
+        electricityText.setText('Electricity price: ' + currentElectricityPrice + ' € / MWh');
         gridPowerText.setText('Grid Power ' + gridPower + ' kW');
 
         // transactionHistory.addTransaction(currentConsumption, 'expense', 'Hourly expense');

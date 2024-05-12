@@ -9,7 +9,9 @@ export const TILE_CONFIG = {
         rescale: 0.0325
     },
     forest: {
-        bgColor: colorNameToHex('dark-green'),
+        bgColor: colorNameToHex('green'),
+        image: 'forest',
+        rescale: 0.0325,
     }, 
     grass: {
         bgColor: colorNameToHex('green'),
