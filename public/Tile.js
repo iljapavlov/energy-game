@@ -70,6 +70,8 @@ export class Tile {
     setImage(scene, imageKey) {
         if (this.tile) {
             this.tile.destroy(); // Destroy the current image
+            // this.tile.add.image(null);
+            // this.scene.update()
         }
         this.tile = scene.add.image(
             100 + this.j * Tile.TILE_SIZE,

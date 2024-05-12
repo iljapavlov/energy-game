@@ -169,7 +169,7 @@ function create() {
     this.add.rectangle(0, 0, 800, 40, 0x333333).setOrigin(0);
 
     // Create tiles
-    loadLevel('level1', this)
+    loadLevel('level1', this, false)
 
     // Capture keyboard arrows
     cursors = this.input.keyboard.createCursorKeys();
@@ -252,9 +252,9 @@ function create() {
     const level3Button = this.add.text(810, 550, '3', { fontSize: '32px', fill: '#fff' }).setInteractive();
 
     // Add click events to the buttons
-    level1Button.on('pointerdown', () => loadLevel('level1', this));
-    level2Button.on('pointerdown', () => loadLevel('level2', this));
-    level3Button.on('pointerdown', () => loadLevel('level3', this));
+    level1Button.on('pointerdown', () => loadLevel('level1', this, true));
+    level2Button.on('pointerdown', () => loadLevel('level2', this, true));
+    level3Button.on('pointerdown', () => loadLevel('level3', this, true));
 
     this.input.on('pointerdown', (pointer) => {
         const x = Math.floor((pointer.x - 75) / Tile.TILE_SIZE);
@@ -266,9 +266,19 @@ function create() {
     });
 }
 
-function loadLevel(levelKey, scene) {
+function loadLevel(levelKey, scene, isNotInit) {
     // Clear the current level
     // ...
+    gridPower=0;
+    currentElectricityPrice=0;
+    hourCounter=0;
+    tiles = [];
+    money=10000;
+
+    if (isNotInit) {
+        scene.update()
+        transactionHistory.resetTransactionHistory();
+    }
 
     // Load the new level
     const levelDesign = levelDesigns[levelKey];

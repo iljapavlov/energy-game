@@ -69,4 +69,9 @@ export class TransactionHistory {
             return acc;
         }, 0);
     }
+
+    resetTransactionHistory() {
+        this.transactions = [];
+        this.addTransaction(10000, 'income', 'Initial balance')
+    }
 }
