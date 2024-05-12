@@ -49,6 +49,7 @@ var config = {
  * The player's starting amount of money.
  */
 var money = 10000;
+var gameScore = 0;
 
 var currentLevel = 'level1';
 var dayNightOverlay;
@@ -82,6 +83,10 @@ var gridPower = 0;
 let colorCharge = 0xDF9FF;
 let colorDischarge = 0xFF9F9F;
 let colorIdle = 0x9F9FFF;
+
+// score calculation
+let energyPriceHistory = [];
+var scoreText;
 
 const getCurrentConsumption = () => {
     return HOURLY_CONSUMPTION[hourCounter % HOURLY_CONSUMPTION.length] * PowerConsumer.houseCount;
@@ -186,7 +191,7 @@ function create() {
     this.add.rectangle(0, 0, 900, 40, 0x333333).setOrigin(0);
     this.add.text(10, 5, 'GriVi', {fontSize: '32px', fill: '#fff', fontFamily: 'Arial'});
     this.add.text(170, 10, 'Connect with Energy, Learn the Grid!', {fontSize: '22px', fill: '#fff', fontFamily: 'Arial'});
-
+    scoreText = this.add.text(780, 9, 'Score:  0' , {fontFamily: 'Arial', fontSize: '18px', fill: '#fff'});
 
     // Create tiles
     loadLevel('level1', this, false)
@@ -528,6 +533,9 @@ function onTick() {
     }
     if (!paused) {
         hourCounter++;
+        if (hourCounter >= 24*10) {
+            pauseGame();
+        }
         currentConsumption = getCurrentConsumption();
 
         currentProduction = getCurrentProduction();
@@ -536,12 +544,15 @@ function onTick() {
         updatePowerStorage();
 
         currentElectricityPrice = getCurrentElectricityPrice(currentProduction, currentConsumption);
+
+        energyPriceHistory.push(currentElectricityPrice);
         electricityText.setText('Electricity price: ' + currentElectricityPrice + ' € / MWh');
         gridPowerText.setText('Grid Power ' + gridPower + ' kW');
 
         // transactionHistory.addTransaction(currentConsumption, 'expense', 'Hourly expense');
         // updateMoneyDisplay();
         updateTimeDisplay();
+        updateScoreDisplay();
 
         updateIllumination(hourCounter%24);
         // Update the color of all PowerConsumers based on their status
@@ -624,18 +635,25 @@ function resumeGame() {
 }
 
 /**
- * The updateMoneyDisplay function is used to update the display of the player's money.
- */
-function updateMoneyDisplay() {
-    moneyText.setText('Money: $' + transactionHistory.getBalance());
-}
-
-/**
  * The updateTimeDisplay function is used to update the display of the current day.
  */
 function updateTimeDisplay() {
     timeText.setText('Hour: ' + hourCounter%24+':00');
     dayText.setText('Day:  '+ Math.floor(hourCounter/24));
+}
+
+/**
+ * Game score = average electricity price. (Game stops automatically after 10 days)
+ */
+function add(accumulator, a) {
+    return accumulator + --a;
+  }
+
+function updateScoreDisplay() {
+    console.log('updating score')
+    console.log(energyPriceHistory)
+    const avgPrice = energyPriceHistory.reduce(add, 0)/energyPriceHistory.length;
+    scoreText.setText('Score: ' + avgPrice.toFixed(3));
 }
 
 // Simulate day and night cycle by varying the alpha of the overlay
