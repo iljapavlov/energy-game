@@ -32,8 +32,9 @@ export const TILE_CONFIG = {
         image: 'house-battery'
     },
     houseSolar: {
-        bgColor: colorNameToHex('green'),
-        image: 'house-solar'
+        bgColor: colorNameToHex('dark-green'),
+        image: 'house-solar',
+        powerOutput: 10,
     },
     houseSolarBattery: {
         bgColor: colorNameToHex('green'),
