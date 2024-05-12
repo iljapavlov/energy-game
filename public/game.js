@@ -7,7 +7,7 @@
 // Import necessary modules and classes
 import { EleringDataFetcher } from './EleringDataFetcher.js';
 import { Tile } from './Tile.js';
-import { TransactionHistory } from './TransactionHistory.js';
+// import { TransactionHistory } from './TransactionHistory.js';
 import { InfoPanel } from './info/InfoPanel.js';
 import { levelDesigns } from "./levelDesigns.js";
 import { Connector } from "./tiletypes/powerConnector/Connector.js";
@@ -70,7 +70,7 @@ let eleringDataFetcher;
 let HOURLY_CONSUMPTION = [];
 let HOURLY_PRODUCTION = [];
 
-var hourCounter = 0;
+var hourCounter = 36;
 let weatherManager = null;
 let infoPanel = null;
 
@@ -181,7 +181,8 @@ function create() {
         console.log("Cons: " + HOURLY_CONSUMPTION);
     });
     // Creating the top bar
-    this.add.rectangle(0, 0, 800, 40, 0x333333).setOrigin(0);
+    this.add.rectangle(0, 0, 900, 40, 0x333333).setOrigin(0);
+    this.add.text(10, 5, 'GriVi', {fontSize: '32px', fill: '#fff', fontFamily: 'Arial'});
 
     // Create tiles
     loadLevel('level1', this, false)
@@ -216,20 +217,19 @@ function create() {
     // Add keyboard inputs for pausing and resuming the game
     this.input.keyboard.on('keydown-P', pauseGame, this);
     this.input.keyboard.on('keydown-R', resumeGame, this);
-    timeText = this.add.text(300, 20, 'Hour: ' + hourCounter%24+':00', {fontSize: '18px', fill: '#fff'});
-    dayText = this.add.text(430, 20, 'Day: ' + Math.floor(hourCounter/24), {fontSize: '18px', fill: '#fff'});
+    timeText = this.add.text(680, 110, 'Hour: ' + hourCounter%24+':00', {fontFamily: 'Arial', fontSize: '18px', fill: '#fff'});
+    dayText = this.add.text(680, 90, 'Day:  ' + Math.floor(hourCounter/24), {fontFamily: 'Arial', fontSize: '18px', fill: '#fff'});
     currentElectricityPrice = getCurrentElectricityPrice(currentProduction, currentConsumption);
 
     // consumptionText = this.add.text(500, 20, 'Consumption: ' + currentConsumption, { fontSize: '18px', fill: '#fff' });
     // productionText = this.add.text(700, 20, 'Production: ' + currentProduction, { fontSize: '18px', fill: '#fff' });
-    electricityText = this.add.text(510, 20, 'Electricity price: ' + currentElectricityPrice, {
-        fontSize: '18px', fill: '#fff'
+    electricityText = this.add.text(575, 180, 'Electricity price: ' + currentElectricityPrice, {
+        fontFamily: 'Arial', fontSize: '14px', fill: '#fff'
     });
 
-    gridPowerText = this.add.text(500, 40, 'Grid Power ' + gridPower, {
-        fontSize: '18px', fill: '#fff'
+    gridPowerText = this.add.text(575, 160, 'Grid Power ' + gridPower, {
+        fontFamily: 'Arial', fontSize: '14px', fill: '#fff'
     });
-
 
     // Step 1: Create a new container
     let buttonContainer = this.add.container(this.game.config.width - 100, this.game.config.height - 100);
@@ -240,9 +240,9 @@ function create() {
     let setToIdle = this.add.rectangle(0, -80, 110, 30, colorIdle).setInteractive();
 
     // Add text to the buttons
-    let textCharge = this.add.text(0, 0, 'Charge', {color: '#000000', fontSize: '16px'}).setOrigin(0.5);
-    let textDischarge = this.add.text(0, -40, 'Discharge', {color: '#000000', fontSize: '16px'}).setOrigin(0.5);
-    let textIdle = this.add.text(0, -80, 'Inactivate', {color: '#000000', fontSize: '16px'}).setOrigin(0.5);
+    let textCharge = this.add.text(0, 0, 'Charge', {fontFamily: 'Arial', color: '#000000', fontSize: '14px'}).setOrigin(0.5);
+    let textDischarge = this.add.text(0, -40, 'Discharge', {fontFamily: 'Arial', color: '#000000', fontSize: '14px'}).setOrigin(0.5);
+    let textIdle = this.add.text(0, -80, 'Inactivate', {fontFamily: 'Arial', color: '#000000', fontSize: '14px'}).setOrigin(0.5);
 
     // Step 3: Add the buttons and text to the container
     buttonContainer.add([setToCharge, setToDischarge, setToIdle, textCharge, textDischarge, textIdle]);
@@ -275,12 +275,12 @@ function create() {
     // Level switching
 
     // Add the label
-    this.add.text(580, 550, 'Level:', { fontSize: '32px', fill: '#fff' });
+    this.add.text(580, 550, 'Level:', { fontFamily: 'Arial', fontSize: '32px', fill: '#fff' });
 
     // Add the buttons
-    const level1Button = this.add.text(710, 550, '1', { fontSize: '32px', fill: '#fff' }).setInteractive();
-    const level2Button = this.add.text(760, 550, '2', { fontSize: '32px', fill: '#fff' }).setInteractive();
-    const level3Button = this.add.text(810, 550, '3', { fontSize: '32px', fill: '#fff' }).setInteractive();
+    const level1Button = this.add.text(710, 550, '1', { fontFamily: 'Arial', fontSize: '32px', fill: '#fff' }).setInteractive();
+    const level2Button = this.add.text(760, 550, '2', { fontFamily: 'Arial', fontSize: '32px', fill: '#fff' }).setInteractive();
+    const level3Button = this.add.text(810, 550, '3', { fontFamily: 'Arial', fontSize: '32px', fill: '#fff' }).setInteractive();
 
     // Add click events to the buttons
     level1Button.on('pointerdown', () => loadLevel('level1', this, true));
@@ -308,14 +308,14 @@ function loadLevel(levelKey, scene, isNotInit) {
     // ...
     gridPower=0;
     currentElectricityPrice=0;
-    hourCounter=0;
+    hourCounter=36;
 
     tiles = [];
     money=10000;
 
     if (isNotInit) {
         scene.update()
-        transactionHistory.resetTransactionHistory();
+        // transactionHistory.resetTransactionHistory();
     }
 
     // Load the new level
@@ -626,7 +626,7 @@ function updateMoneyDisplay() {
  */
 function updateTimeDisplay() {
     timeText.setText('Hour: ' + hourCounter%24+':00');
-    dayText.setText('Day: '+ Math.floor(hourCounter/24));
+    dayText.setText('Day:  '+ Math.floor(hourCounter/24));
 }
 
 // Simulate day and night cycle by varying the alpha of the overlay
