@@ -2,97 +2,115 @@ export const TILE_CONFIG = {
     // TERRAIN TILES
     plains: {
         bgColor: colorNameToHex('green'),
+        title: 'Plains'
     },
     sea: {
         bgColor: colorNameToHex('blue'),
         bgImage: 'water',
-        rescale: 0.0325
+        rescale: 0.0325,
+        title: 'Lake'
     },
     forest: {
-        bgColor: colorNameToHex('green'),
         image: 'forest',
         rescale: 0.0325,
-    }, 
+        bgColor: colorNameToHex('dark-green'),
+        title: 'Forest'
+    },
     grass: {
         bgColor: colorNameToHex('green'),
         bgImage: 'grass',
-        rescale: 0.0325
+        rescale: 0.0325,
+        title: 'Grass'
     },
     grassFlowers: {
         bgColor: colorNameToHex('green'),
         bgImage: 'grass-flowers',
-        rescale: 0.0325
+        rescale: 0.0325,
+        title: 'Flowery Grass'
     },
 
     // POWER CONSUMER TILES
     house: {
         bgColor: colorNameToHex('green'),
-        image: 'house'
+        image: 'house',
+        title: 'House',
     },
     houseBattery: {
         bgColor: colorNameToHex('green'),
-        image: 'house-battery'
+        image: 'house-battery',
+        title: 'House with battery',
     },
     houseSolar: {
         bgColor: colorNameToHex('dark-green'),
         image: 'house-solar',
         powerOutput: 10,
+        title: 'House with solar panels',
     },
     houseSolarBattery: {
         bgColor: colorNameToHex('green'),
         image: 'house-solar-battery-empty',
-        rescale: 0.033
+        rescale: 0.033,
+        title: 'House with solar panels \nand battery',
     },
 
     // POWER PRODUCERS
     biomass: {
         bgColor: colorNameToHex('green'),
         powerOutput: 120,
-        isRenewable: false
+        isRenewable: false,
+        title: 'Biomass Power Plant'
     },
     coal: {
         bgColor: colorNameToHex('dark-grey'),
         powerOutput: 200,
         isRenewable: false,
         image: 'power-plant-on',
-        rescale: 0.1
+        rescale: 0.1,
+        title: 'Coal Power Plant'
     },
     gas: {
         bgColor: colorNameToHex('dark-grey'),
         powerOutput: 300,
-        isRenewable: false
+        isRenewable: false,
+        title: 'Gas Power Plant'
     },
     geothermal: {
         bgColor: colorNameToHex('dark-grey'),
         powerOutput: 300,
-        isRenewable: true
+        isRenewable: true,
+        title: 'Geothermal Power Plant'
     },
     nuclear: {
         bgColor: colorNameToHex('green'),
         powerOutput: 1200,
-        isRenewable: true
+        isRenewable: true,
+        title: 'Nuclear Power Plant'
     },
     solarPanel: {
         bgColor: colorNameToHex('green'),
         image: 'solar-panel',
         powerOutput: 10,
         isRenewable: true,
-        rescale: 0.02
+        rescale: 0.02,
+        title: 'Solar Panels'
     },
     windMill: {
         bgColor: colorNameToHex('green'),
         powerOutput: 10,
-        isRenewable: true
+        isRenewable: true,
+        title: 'Windmill'
     },
     tidal: {
         bgColor: colorNameToHex('blue'),
         isRenewable: true,
-        powerOutput: 10
+        powerOutput: 10,
+        title: 'Tidal Power Plant'
     },
     hydro: {
         bgColor: colorNameToHex('blue'),
         isRenewable: true,
-        powerOutput: 12
+        powerOutput: 12,
+        title: 'Hydro Power Plant'
     },
 
     // POWER STORAGE
@@ -100,12 +118,14 @@ export const TILE_CONFIG = {
         bgColor: colorNameToHex('green'),
         storageCapacity: 200,
         image: 'battery-two-bars',
-        rescale: 0.045
+        rescale: 0.045,
+        title: 'Energy Storage'
     },
 
     // CONNECTOR
     connector: {
         bgColor: colorNameToHex('green'),
+        title: 'Connector',
     }
 }
 

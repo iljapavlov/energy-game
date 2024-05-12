@@ -223,7 +223,7 @@ function create() {
 
     // consumptionText = this.add.text(500, 20, 'Consumption: ' + currentConsumption, { fontSize: '18px', fill: '#fff' });
     // productionText = this.add.text(700, 20, 'Production: ' + currentProduction, { fontSize: '18px', fill: '#fff' });
-    electricityText = this.add.text(575, 180, 'Electricity price: ' + currentElectricityPrice, {
+    electricityText = this.add.text(575, 180, 'Electricity price: ' + (isNaN(currentElectricityPrice) ? 10 : currentElectricityPrice) + '€ / MWh', {
         fontFamily: 'Arial', fontSize: '14px', fill: '#fff'
     });
 
@@ -325,12 +325,12 @@ function loadLevel(levelKey, scene, isNotInit) {
         for (let j = 0; j < 10; j++) {
             let type = levelDesign[i][j];
             let tile;
-            switch (type.split(":")[0]) {
+            switch (type.split(";")[0]) {
                 case 'Connector':
                     tile = new Connector(scene, i, j);
                     break;
                 case 'House':
-                    tile = new House(scene, i, j, type.split(":")[1]);
+                    tile = new House(scene, i, j, type.split(";")[1]);
                     break;
                 case 'HouseBattery':
                     tile = new HouseBattery(scene, i, j);
@@ -340,7 +340,7 @@ function loadLevel(levelKey, scene, isNotInit) {
                     tile = new HouseSolar(scene, i, j);
                     break;
                 case 'HouseSolarBattery':
-                    tile = new HouseSolarBattery(scene, i, j);
+                    tile = new HouseSolarBattery(scene, i, j, type.split(";")[1]);
                     tile.bg.setFillStyle(colorIdle, 1)
                     break;
                 case 'Coal':

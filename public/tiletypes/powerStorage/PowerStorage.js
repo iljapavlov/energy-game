@@ -2,8 +2,8 @@ import {Tile} from "../../Tile.js";
 import { TILE_CONFIG } from "../../TileConfig.js";
 
 export class PowerStorage extends Tile {
-    constructor(scene, i, j, tileName) {
-        super(scene, i, j, tileName);
+    constructor(scene, i, j, tileName, text) {
+        super(scene, i, j, tileName, text);
         this.storageCapacity = TILE_CONFIG[tileName]['storageCapacity'];
         this.status = 'idle'; // can be 'charging', 'discharging', or 'idle'
         this.currentPower = 100; // current amount of power in the battery
