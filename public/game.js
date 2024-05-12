@@ -222,7 +222,7 @@ function create() {
 
     // consumptionText = this.add.text(500, 20, 'Consumption: ' + currentConsumption, { fontSize: '18px', fill: '#fff' });
     // productionText = this.add.text(700, 20, 'Production: ' + currentProduction, { fontSize: '18px', fill: '#fff' });
-    electricityText = this.add.text(510, 20, 'Electricity price: ' + currentElectricityPrice, {
+    electricityText = this.add.text(510, 20, 'Electricity price: ' + (isNaN(currentElectricityPrice) ? 10 : currentElectricityPrice) + '€ / MWh', {
         fontSize: '18px', fill: '#fff'
     });
 
