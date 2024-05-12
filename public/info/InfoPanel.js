@@ -6,13 +6,13 @@ export class InfoPanel {
 
     this.pos = {
       x: 575,
-      y: 190 + 50
+      y: 190 + 90
     };
 
-    this.titles = scene.add.text(this.pos.x, this.pos.y, "Info Panel", { fontFamily: 'Arial', fontSize: 26, color: '#ffffff' });
-    this.text = scene.add.text(this.pos.x, this.pos.y + 40, "", { fontFamily: 'Arial', fontSize: 18, color: '#ffffff' });
+    this.titles = scene.add.text(this.pos.x, this.pos.y, "Info Panel", { fontFamily: 'Arial', fontSize: 16, color: '#ffffff' });
+    this.text = scene.add.text(this.pos.x, this.pos.y + 40, "", { fontFamily: 'Arial', fontSize: 12, color: '#ffffff' });
     
-    this.tile = new Tile(this.scene, 2, 11, tileData.name, tileData.text);
+    this.tile = new Tile(this.scene, 3, 11, tileData.name, tileData.text);
   }
 
   setSelectedTileText(tileData) {

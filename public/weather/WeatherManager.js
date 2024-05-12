@@ -14,7 +14,8 @@ export class WeatherManager {
 
     this.image = scene.add.image(840,110).setInteractive();
 
-    this.setRandomWeather();
+    // this.setRandomWeather();
+    this.setWeather('sun');
   }
 
   setRandomWeather() {
