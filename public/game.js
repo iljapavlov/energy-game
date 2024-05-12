@@ -64,7 +64,7 @@ var cursors; // To hold the cursor keys
 var tiles = []; // 2D array of tiles
 var gameTimer;
 var paused = true;
-let transactionHistory;
+// let transactionHistory;
 let eleringDataFetcher;
 
 let HOURLY_CONSUMPTION = [];
@@ -74,7 +74,7 @@ var hourCounter = 0;
 let weatherManager = null;
 let infoPanel = null;
 
-var moneyText; // To update the money display dynamically
+// var moneyText; // To update the money display dynamically
 var timeText; // To update the time display dynamically
 var dayText; 
 var electricityText;
@@ -205,24 +205,24 @@ function create() {
     // Capture keyboard arrows
     cursors = this.input.keyboard.createCursorKeys();
 
-    // money related things
-    moneyText = this.add.text(10, 20, 'Money: €' + money, {fontSize: '20px', fill: '#fff'});
-    // Initialize the transaction history
-    transactionHistory = new TransactionHistory();
-    transactionHistory.addTransaction(money, 'income', 'Initial money')
+    // // money related things
+    // moneyText = this.add.text(10, 20, 'Money: €' + money, {fontSize: '20px', fill: '#fff'});
+    // // Initialize the transaction history
+    // transactionHistory = new TransactionHistory();
+    // transactionHistory.addTransaction(money, 'income', 'Initial money')
 
     // Create a looped timer event that triggers every second
-    gameTimer = this.time.addEvent({delay: 1000, callback: onTick, callbackScope: this, loop: true});
+    gameTimer = this.time.addEvent({delay: 1500, callback: onTick, callbackScope: this, loop: true});
     // Add keyboard inputs for pausing and resuming the game
     this.input.keyboard.on('keydown-P', pauseGame, this);
     this.input.keyboard.on('keydown-R', resumeGame, this);
     timeText = this.add.text(300, 20, 'Hour: ' + hourCounter%24+':00', {fontSize: '18px', fill: '#fff'});
-    dayText = this.add.text(420, 20, 'Day: ' + Math.floor(hourCounter/24), {fontSize: '18px', fill: '#fff'});
+    dayText = this.add.text(430, 20, 'Day: ' + Math.floor(hourCounter/24), {fontSize: '18px', fill: '#fff'});
     currentElectricityPrice = getCurrentElectricityPrice(currentProduction, currentConsumption);
 
     // consumptionText = this.add.text(500, 20, 'Consumption: ' + currentConsumption, { fontSize: '18px', fill: '#fff' });
     // productionText = this.add.text(700, 20, 'Production: ' + currentProduction, { fontSize: '18px', fill: '#fff' });
-    electricityText = this.add.text(500, 20, 'Electricity price: ' + currentElectricityPrice, {
+    electricityText = this.add.text(510, 20, 'Electricity price: ' + currentElectricityPrice, {
         fontSize: '18px', fill: '#fff'
     });
 
@@ -530,8 +530,8 @@ function onTick() {
         electricityText.setText('Electricity price: ' + currentElectricityPrice + ' € / MWh');
         gridPowerText.setText('Grid Power ' + gridPower + ' kW');
 
-        transactionHistory.addTransaction(currentConsumption, 'expense', 'Hourly expense');
-        updateMoneyDisplay();
+        // transactionHistory.addTransaction(currentConsumption, 'expense', 'Hourly expense');
+        // updateMoneyDisplay();
         updateTimeDisplay();
 
         updateIllumination(hourCounter%24);
