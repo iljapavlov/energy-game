@@ -315,7 +315,7 @@ function loadLevel(levelKey, scene, isNotInit) {
 
     if (isNotInit) {
         scene.update()
-        transactionHistory.resetTransactionHistory();
+        // transactionHistory.resetTransactionHistory();
     }
 
     // Load the new level
