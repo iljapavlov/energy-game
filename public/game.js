@@ -31,6 +31,8 @@ import { HouseSolarBattery } from "./tiletypes/powerStorage/HouseSolarBattery.js
 import { PowerStorage } from "./tiletypes/powerStorage/PowerStorage.js";
 import { Forest } from "./tiletypes/terrain/Forest.js";
 import { Plains } from './tiletypes/terrain/Plains.js';
+import { Grass } from './tiletypes/terrain/Grass.js';
+import { GrassFlowers } from './tiletypes/terrain/GrassFlowers.js';
 import { Sea } from './tiletypes/terrain/Sea.js';
 import { WeatherManager } from './weather/WeatherManager.js';
 
@@ -49,8 +51,8 @@ var config = {
  */
 var money = 10000;
 
-
 var currentLevel = 'level1';
+var dayNightOverlay;
 
 /**
  * The Phaser game instance.
@@ -74,8 +76,6 @@ let infoPanel = null;
 
 var moneyText; // To update the money display dynamically
 var timeText; // To update the time display dynamically
-// var consumptionText;
-// var productionText;
 var electricityText;
 var gridPowerText;
 var gridPower = 0;
@@ -136,19 +136,31 @@ console.log('current elect price calc', currentConsumption, currentProduction, c
  * The preload function is part of the Phaser game lifecycle and is used to load assets.
  */
 function preload() {
-    // Load hosue image
+    // Load object image
     this.load.image('house', './img/house.png');
     this.load.image('house-night', './img/house-night.png');
     this.load.image('house-solar', './img/house-solar.png');
+    // this.load.image('house-battery', './img/house-battery.png');
     this.load.image('solar-panel', './img/solar-panel.png');
     this.load.image('tower', './img/tower.png');
     this.load.image('water', './img/water.png');
+    this.load.image('grass', './img/grass.png');
+    this.load.image('grass-flowers', './img/grass-flowers.png');
+    this.load.image('power-plant-on', './img/power-plant-on.png');
 
     // Weather images
     this.load.image('sun', './img/weather/sun.png');
     this.load.image('moon', './img/weather/moon.png');
     this.load.image('cloudySun', './img/weather/cloudySun.png');
     this.load.image('storm', './img/weather/storm.png');
+
+
+    // Homes with batteries images
+    this.load.image('house-solar-battery-empty', './img/house-solar-batteries/HOUSE_AND_BATTERY_0_.png')
+    this.load.image('house-solar-battery-one-bar', './img/house-solar-batteries/HOUSE_AND_BATTERY_25_.png')
+    this.load.image('house-solar-battery-two-bars', './img/house-solar-batteries/HOUSE_AND_BATTERY_50_.png')
+    this.load.image('house-solar-battery-three-bars', './img/house-solar-batteries/HOUSE_AND_BATTERY_75_.png')
+    this.load.image('house-solar-battery-full', './img/house-solar-batteries/HOUSE_AND_BATTERY_100_.png')
 
     // Chemical Battery Images
     this.load.image('battery-empty', './img/battery-statuses/battery_0.png');
@@ -173,6 +185,22 @@ function create() {
     // Create tiles
     loadLevel('level1', this, false)
 
+    // create overlay for illumination
+    const mapWidthInTiles = 10; // Example: 10 tiles wide
+    const mapHeightInTiles = 10; // Example: 10 tiles high
+    const tileSize = Tile.TILE_SIZE*0.95; // Each tile is 50 pixels square
+
+    const overlayWidth = mapWidthInTiles * tileSize;
+    const overlayHeight = mapHeightInTiles * tileSize;
+
+    const xOffset = 25;
+    const yOffset = 75;
+
+    // Create overlay for illumination
+    dayNightOverlay = this.add.rectangle(xOffset+0, yOffset+0, xOffset+overlayWidth, yOffset+overlayHeight, 0x000000, 1).setOrigin(0, 0);
+    dayNightOverlay.setDepth(100); // Ensure it's on top of other game elements
+    dayNightOverlay.setAlpha(0); // Start with some initial transparency
+
     // Capture keyboard arrows
     cursors = this.input.keyboard.createCursorKeys();
 
@@ -187,7 +215,7 @@ function create() {
     // Add keyboard inputs for pausing and resuming the game
     this.input.keyboard.on('keydown-P', pauseGame, this);
     this.input.keyboard.on('keydown-R', resumeGame, this);
-    timeText = this.add.text(300, 20, 'Hour: ' + hourCounter, {fontSize: '18px', fill: '#fff'});
+    timeText = this.add.text(300, 20, 'Hour: ' + hourCounter%24+':00', {fontSize: '18px', fill: '#fff'});
     currentElectricityPrice = getCurrentElectricityPrice(currentProduction, currentConsumption);
 
     // consumptionText = this.add.text(500, 20, 'Consumption: ' + currentConsumption, { fontSize: '18px', fill: '#fff' });
@@ -279,6 +307,7 @@ function loadLevel(levelKey, scene, isNotInit) {
     gridPower=0;
     currentElectricityPrice=0;
     hourCounter=0;
+
     tiles = [];
     money=10000;
 
@@ -356,6 +385,12 @@ function loadLevel(levelKey, scene, isNotInit) {
                 case 'Sea':
                     tile = new Sea(scene, i, j);
                     break;
+                case 'Grass':
+                    tile = new Grass(scene, i, j);
+                    break;
+                case 'GrassFlowers':
+                    tile = new GrassFlowers(scene, i, j);
+                    break;
                 default:
                     tile = new Tile(scene, i, j, "red");
                     break;
@@ -407,7 +442,7 @@ function loadLevel(levelKey, scene, isNotInit) {
             if (ni >= 0 && ni < map.length && nj >= 0 && nj < map[0].length) { //boundaries
                 const neighbour = map[ni][nj];
 
-                if ((!['Sea', 'Plains', 'Forest'].includes(tileName)) && (!['Sea', 'Plains', 'Forest'].includes(neighbour))){
+                if ((!['Sea', 'Plains', 'Forest', 'Grass', 'GrassFlowers'].includes(tileName)) && (!['Sea', 'Plains', 'Forest', 'Grass', 'GrassFlowers'].includes(neighbour))){
                     const neighborCenterX = baseX + nj * tileSize + tileSize / 2;
                     const neighborCenterY = baseY + ni * tileSize + tileSize / 2;
 
@@ -419,7 +454,7 @@ function loadLevel(levelKey, scene, isNotInit) {
                     const wire = scene.add.rectangle(centerX, centerY, distance, wireWidth, 0x314a26)
                         .setOrigin(0, 0.5)
                         .setAngle(Phaser.Math.RadToDeg(angle))
-                        .setDepth(0);
+                        .setDepth(1);
                 }
             }
         });
@@ -496,6 +531,8 @@ function onTick() {
         transactionHistory.addTransaction(currentConsumption, 'expense', 'Hourly expense');
         updateMoneyDisplay();
         updateTimeDisplay();
+
+        updateIllumination(hourCounter%24);
         // Update the color of all PowerConsumers based on their status
 
         tiles.flat().filter(tile => tile instanceof PowerStorage).forEach(tile => {
@@ -515,9 +552,8 @@ function onTick() {
             }
         });
 
-        tiles.flat().filter(tile => tile instanceof PowerStorage).forEach(tile => {
+        tiles.flat().filter(tile => tile instanceof ChemicalBattery).forEach(tile => {
             let chargePercentage = tile.currentPower / tile.storageCapacity;
-
             if (chargePercentage === 0) {
                 tile.setImage(this, 'battery-empty');
             } else if (chargePercentage < 0.25) {
@@ -528,6 +564,21 @@ function onTick() {
                 tile.setImage(this, 'battery-three-bars');
             } else {
                 tile.setImage(this, 'battery-full');
+            }
+        });
+
+        tiles.flat().filter(tile => tile instanceof HouseSolarBattery).forEach(tile => {
+            let chargePercentage = tile.currentPower / tile.storageCapacity;
+            if (chargePercentage === 0) {
+                tile.setImage(this, 'house-solar-battery-empty');
+            } else if (chargePercentage < 0.25) {
+                tile.setImage(this, 'house-solar-battery-one-bar');
+            } else if (chargePercentage < 0.5) {
+                tile.setImage(this, 'house-solar-battery-two-bars');
+            } else if (chargePercentage < 0.75) {
+                tile.setImage(this, 'house-solar-battery-three-bars');
+            } else {
+                tile.setImage(this, 'house-solar-battery-full');
             }
         });
 
@@ -567,8 +618,42 @@ function updateMoneyDisplay() {
  * The updateTimeDisplay function is used to update the display of the current day.
  */
 function updateTimeDisplay() {
-    timeText.setText('Hour: ' + hourCounter);
+    timeText.setText('Hour: ' + hourCounter%24+':00');
 }
+
+// Simulate day and night cycle by varying the alpha of the overlay
+// Assuming the day is from hour 6 to 18, adjust alpha accordingly
+function updateIllumination(hour) {
+    let alpha;
+    const maxLight = 1;
+    const minLight = 0.7;
+
+    if (hour >= 12 && hour <= 16) {
+        // Maximum light with slight random variation
+        alpha = maxLight + (Math.random() * 0.5 - 0.025); // +/- 0.05 variation
+    } else if (hour > 16 && hour <= 21) {
+        // Logarithmic decrease to minLight
+        // Calculate a scaling factor based on the time difference
+        const scale = (hour - 16) / (21 - 16);
+        alpha = maxLight - ((Math.log10(scale * 9 + 1) / Math.log10(10)) * (maxLight - minLight));
+    } else if (hour > 21 || hour < 4) {
+        // Constant darkness
+        alpha = minLight;
+    } else if (hour >= 4 && hour < 12) {
+        // Exponential rise to maxLight
+        // Normalize time from 0 at 4 AM to 1 at 12 PM
+        const normalizedTime = (hour - 4) / (12 - 4);
+        alpha = minLight + (Math.exp(normalizedTime * Math.log(2)) - 1) / (Math.exp(Math.log(2)) - 1) * (maxLight - minLight);
+    }
+
+    // Ensure alpha is clamped to the range [minLight, maxLight]
+    alpha = 1 - Math.max(minLight, Math.min(maxLight, alpha));
+
+    // Set the alpha of the dayNightOverlay based on the calculated light intensity
+    dayNightOverlay.setAlpha(alpha);
+    console.log('Illumination: ',alpha)
+}
+
 
 /**
  * The update function is part of the Phaser game lifecycle and is called every frame to update the game state.
@@ -602,7 +687,6 @@ function updateSelection(x, y) {
         }
     }
 }
-
 
 async function initializeDataFetcher() {
     eleringDataFetcher = new EleringDataFetcher();
