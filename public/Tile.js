@@ -82,6 +82,21 @@ export class Tile {
     }
 
     setImage(scene, imageKey, name) {
+        const bgImage = TILE_CONFIG[name].bgImage;
+
+        if (!!bgImage) {
+            const rescale = TILE_CONFIG[name].rescale || 0.2;
+
+            this.tile.destroy(); // Destroy the current image
+            this.tile = scene.add.image(
+                50 + this.j * Tile.TILE_SIZE,
+                100 + this.i * Tile.TILE_SIZE,
+                bgImage
+            ).setInteractive().setDepth(0).setScale(rescale);
+            return;
+        }
+        
+
         if (!!name) {
             const bgColor = TILE_CONFIG[name].bgColor;
             this.bg.setFillStyle(bgColor);
