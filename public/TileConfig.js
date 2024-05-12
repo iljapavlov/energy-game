@@ -13,7 +13,7 @@ export const TILE_CONFIG = {
     forest: {
         image: 'forest',
         rescale: 0.0325,
-        bgColor: colorNameToHex('dark-green'),
+        bgColor: colorNameToHex('green'),
         title: 'Forest'
     },
     grass: {
