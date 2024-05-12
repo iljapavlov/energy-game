@@ -185,6 +185,8 @@ function create() {
     // Creating the top bar
     this.add.rectangle(0, 0, 900, 40, 0x333333).setOrigin(0);
     this.add.text(10, 5, 'GriVi', {fontSize: '32px', fill: '#fff', fontFamily: 'Arial'});
+    this.add.text(170, 10, 'Connect with Energy, Learn the Grid!', {fontSize: '22px', fill: '#fff', fontFamily: 'Arial'});
+
 
     // Create tiles
     loadLevel('level1', this, false)
