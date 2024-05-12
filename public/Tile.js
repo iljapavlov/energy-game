@@ -24,6 +24,7 @@ export class Tile {
      * @param {number} i - The row index of the tile.
      * @param {number} j - The column index of the tile.
      * @param {string} tileName - Tile name
+     * @param text
      */
     constructor(scene, i, j, tileName, text) {
         this.text = text;
@@ -31,6 +32,7 @@ export class Tile {
         this.i = i;
         this.j = j;
         this.name = tileName;
+        this.title = TILE_CONFIG[tileName].title;
 
         const bgColor = TILE_CONFIG[tileName].bgColor;
         this.image = TILE_CONFIG[tileName].image;
