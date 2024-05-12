@@ -30,9 +30,9 @@ import { HouseBattery } from "./tiletypes/powerStorage/HouseBattery.js";
 import { HouseSolarBattery } from "./tiletypes/powerStorage/HouseSolarBattery.js";
 import { PowerStorage } from "./tiletypes/powerStorage/PowerStorage.js";
 import { Forest } from "./tiletypes/terrain/Forest.js";
-import { Plains } from './tiletypes/terrain/Plains.js';
 import { Grass } from './tiletypes/terrain/Grass.js';
 import { GrassFlowers } from './tiletypes/terrain/GrassFlowers.js';
+import { Plains } from './tiletypes/terrain/Plains.js';
 import { Sea } from './tiletypes/terrain/Sea.js';
 import { WeatherManager } from './weather/WeatherManager.js';
 
@@ -273,7 +273,7 @@ function create() {
     // Level switching
 
     // Add the label
-    this.add.text(600, 550, 'Level:', { fontSize: '32px', fill: '#fff' });
+    this.add.text(580, 550, 'Level:', { fontSize: '32px', fill: '#fff' });
 
     // Add the buttons
     const level1Button = this.add.text(710, 550, '1', { fontSize: '32px', fill: '#fff' }).setInteractive();
