@@ -6,16 +6,14 @@ export const TILE_CONFIG = {
     sea: {
         bgColor: colorNameToHex('blue'),
         image: 'water',
-        rescale: 0.03
+        rescale: 0.0325
     },
     forest: {
         bgColor: colorNameToHex('dark-green'),
     }, 
     grass: {
         bgColor: colorNameToHex('green'),
-    },
-    mountain: {
-        bgColor: colorNameToHex('dark-grey'),
+        image: 'grass'
     },
 
     // POWER CONSUMER TILES
@@ -43,7 +41,9 @@ export const TILE_CONFIG = {
     coal: {
         bgColor: colorNameToHex('dark-grey'),
         powerOutput: 200,
-        isRenewable: false
+        isRenewable: false,
+        image: 'power-plant-on',
+        rescale: 0.1
     },
     gas: {
         bgColor: colorNameToHex('dark-grey'),
@@ -85,7 +85,7 @@ export const TILE_CONFIG = {
 
     // POWER STORAGE
     chemicalBattery: {
-        bgColor: colorNameToHex('cyan'),
+        bgColor: colorNameToHex('dark-green'),
         storageCapacity: 200,
         image: 'battery-two-bars',
         rescale: 0.2
@@ -93,7 +93,10 @@ export const TILE_CONFIG = {
 
     // CONNECTOR
     connector: {
-        bgColor: colorNameToHex('black')
+        bgColor: colorNameToHex('dark-green'),
+        // image: 'wire-straight',
+        // animation: 'wire',
+        // rescale: 1.4
     }
 }
 

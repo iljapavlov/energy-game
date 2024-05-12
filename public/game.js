@@ -347,6 +347,76 @@ function loadLevel(levelKey, scene) {
         }
     }
 
+    // Update Connector Tile appearances
+    // for (let i = 0; i < tiles.length; i++) {
+    //     for (let j = 0; j < tiles[i].length; j++) {
+    //         if (tiles[i][j] instanceof Connector) {
+    //             tiles[i][j].updateAppearance();
+    //         }
+    //     }
+    // }
+
+    // Draw wiring
+
+    /**
+     * Draws wiring between connectors and their neighboring tiles if they are not "Sea", "Plains", or "Forest".
+     * @param {Phaser.Scene} scene - The current game scene.
+     * @param {number} i - The row index of the tile.
+     * @param {number} j - The column index of the tile.
+     * @param {Array<Array<string>>} map - The map grid representing tile types.
+     */
+    function drawWiring(scene, i, j, map) {
+        const directions = [
+            { di: -1, dj: 0 }, // Up
+            { di: 1, dj: 0 },  // Down
+            { di: 0, dj: -1 }, // Left
+            { di: 0, dj: 1 }   // Right
+        ];
+
+        const baseX = 75; // Base X-coordinate for the tiles
+        const baseY = 75; // Base Y-coordinate for the tiles
+        const tileSize = Tile.TILE_SIZE;
+        const wireWidth = 4; // Width of the wire
+
+        const centerX = baseX + j * tileSize + tileSize / 2;
+        const centerY = baseY + i * tileSize + tileSize / 2;
+
+        const tileName = map[i][j];
+
+        directions.forEach(({ di, dj }) => {
+            const ni = i + di;
+            const nj = j + dj;
+
+            if (ni >= 0 && ni < map.length && nj >= 0 && nj < map[0].length) { //boundaries
+                const neighbour = map[ni][nj];
+
+                if ((!['Sea', 'Plains', 'Forest'].includes(tileName)) && (!['Sea', 'Plains', 'Forest'].includes(neighbour))){
+                    const neighborCenterX = baseX + nj * tileSize + tileSize / 2;
+                    const neighborCenterY = baseY + ni * tileSize + tileSize / 2;
+
+                    // Calculate angle and distance for the wire
+                    const angle = Math.atan2(neighborCenterY - centerY, neighborCenterX - centerX);
+                    const distance = Phaser.Math.Distance.Between(centerX, centerY, neighborCenterX, neighborCenterY);
+
+                    // Create a rectangle (wire) rotated to connect centers
+                    const wire = scene.add.rectangle(centerX, centerY, distance, wireWidth, 0x314a26)
+                        .setOrigin(0, 0.5)
+                        .setAngle(Phaser.Math.RadToDeg(angle))
+                        .setDepth(0);
+                }
+            }
+        });
+    }
+
+
+    for (let i = 0; i < tiles.length; i++) {
+        for (let j = 0; j < tiles[i].length; j++) {
+            if (!([Sea, Plains, Forest].some(c => tiles[i][j] instanceof c))) {
+                drawWiring(scene, i, j, levelDesign);
+            }
+        }
+    }
+
     // Initial selection
     tiles[0][0].select();
 
