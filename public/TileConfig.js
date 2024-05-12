@@ -19,14 +19,15 @@ export const TILE_CONFIG = {
     // POWER CONSUMER TILES
     house: {
         bgColor: colorNameToHex('dark-green'),
-        image: 'house'
+        image: 'house',
     },
     houseBattery: {
         bgColor: colorNameToHex('dark-green'),
     },
     houseSolar: {
         bgColor: colorNameToHex('dark-green'),
-        image: 'house-solar'
+        image: 'house-solar',
+        powerOutput: 10,
     },
     houseSolarBattery: {
         bgColor: colorNameToHex('dark-green'),

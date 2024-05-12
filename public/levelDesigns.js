@@ -2,7 +2,7 @@ export const levelDesigns = {
     level1: [
         ['SolarPanel', 'SolarPanel', 'SolarPanel', 'SolarPanel', 'Sea', 'Plains', 'Forest', 'Forest', 'Sea', 'Sea'],
         ['SolarPanel', 'SolarPanel', 'SolarPanel', 'SolarPanel', 'Plains', 'Plains', 'Forest', 'Forest', 'Plains', 'Sea'],
-        ['Plains', 'Connector', 'Forest', 'Plains', 'Plains', 'Forest', 'House', 'Plains', 'Plains', 'Plains'],
+        ['Plains', 'Connector', 'Forest', 'Plains', 'Plains', 'Forest', `House:Hi! I’m Johan. Do you like my \nhouse? I live here for more than 40 \nyears! I love this place, but the \nelectricity prices are so high last \nyears! I wish it changed...`, 'Plains', 'Plains', 'Plains'],
         ['Plains', 'ChemicalBattery', 'Forest', 'Plains', 'Plains', 'Forest', 'Connector', 'Plains', 'Forest', 'Plains'],
         ['Plains', 'Connector', 'Connector', 'Connector', 'Connector', 'Connector', 'Connector', 'Forest', 'Forest', 'Forest'],
         ['Plains', 'Plains', 'Plains', 'Forest', 'Forest', 'Forest', 'Forest', 'Forest', 'Forest', 'Forest'],
