@@ -69,19 +69,24 @@ export class Tile {
         }
     }
 
-    setImage(scene, imageKey) {
+    setImage(scene, imageKey, name) {
+        if (!!name) {
+            this.name = name;
+        }
+
         if (this.tile) {
             this.tile.destroy(); // Destroy the current image
             // this.tile.add.image(null);
             // this.scene.update()
         }
         this.tile = scene.add.image(
-            100 + this.j * Tile.TILE_SIZE,
+            50 + this.j * Tile.TILE_SIZE,
             100 + this.i * Tile.TILE_SIZE,
             imageKey
         ).setInteractive();
-        const rescale = TILE_CONFIG[this.name] ? TILE_CONFIG[this.name].rescale || 0.2 : 0.2;
-        this.tile.setScale(this.rescale).setDepth(1);
+        console.log(this.name);
+        const rescale = TILE_CONFIG[this.name].rescale || 0.2;
+        this.tile.setScale(rescale).setDepth(1);
     }
 
     /**

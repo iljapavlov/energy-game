@@ -205,14 +205,14 @@ function create() {
     let buttonContainer = this.add.container(this.game.config.width - 100, this.game.config.height - 100);
 
     // Step 2: Create a few buttons
-    let setToCharge = this.add.rectangle(0, 0, 100, 30, colorCharge).setInteractive();
-    let setToDischarge = this.add.rectangle(0, -40, 100, 30, colorDischarge).setInteractive();
-    let setToIdle = this.add.rectangle(0, -80, 100, 30, colorIdle).setInteractive();
+    let setToCharge = this.add.rectangle(0, 0, 110, 30, colorCharge).setInteractive();
+    let setToDischarge = this.add.rectangle(0, -40, 110, 30, colorDischarge).setInteractive();
+    let setToIdle = this.add.rectangle(0, -80, 110, 30, colorIdle).setInteractive();
 
     // Add text to the buttons
     let textCharge = this.add.text(0, 0, 'Charge', {color: '#000000', fontSize: '16px'}).setOrigin(0.5);
     let textDischarge = this.add.text(0, -40, 'Discharge', {color: '#000000', fontSize: '16px'}).setOrigin(0.5);
-    let textIdle = this.add.text(0, -80, 'Idle', {color: '#000000', fontSize: '16px'}).setOrigin(0.5);
+    let textIdle = this.add.text(0, -80, 'Inactivate', {color: '#000000', fontSize: '16px'}).setOrigin(0.5);
 
     // Step 3: Add the buttons and text to the container
     buttonContainer.add([setToCharge, setToDischarge, setToIdle, textCharge, textDischarge, textIdle]);
