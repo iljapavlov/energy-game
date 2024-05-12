@@ -527,7 +527,7 @@ function onTick() {
         updatePowerStorage();
 
         currentElectricityPrice = getCurrentElectricityPrice(currentProduction, currentConsumption);
-        electricityText.setText('Electricity price: ' + currentElectricityPrice + ' € / kWh');
+        electricityText.setText('Electricity price: ' + currentElectricityPrice + ' € / MWh');
         gridPowerText.setText('Grid Power ' + gridPower + ' kW');
 
         // transactionHistory.addTransaction(currentConsumption, 'expense', 'Hourly expense');
